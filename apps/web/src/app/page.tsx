@@ -23,27 +23,196 @@ const brand = {
   pink: '#e41575',
 };
 
-const placeHolders = {
-  boys: 'https://images.unsplash.com/photo-1611428813653-aa606c998586?auto=format&fit=crop&w=600&q=80',
-  girls: 'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&w=600&q=80',
-  dresses: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=600&q=80',
-  sets: 'https://images.unsplash.com/photo-1519238384236-9ab865764d8a?auto=format&fit=crop&w=600&q=80',
-  pants: 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=600&q=80',
-  tops: 'https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=600&q=80',
-};
-
 const FEATURED_PRODUCTS: Product[] = [
-  { id: '1', name: '3pc Soft Jeans Shorts Set', fit: 'Fits 1-4yrs', price: 'KES 1,800.00', category: 'Boys', image: placeHolders.boys },
-  { id: '2', name: '3pc Official Khaki Set', fit: 'Fits 1-4yrs', price: 'KES 2,000.00', category: 'Boys', image: placeHolders.boys },
-  { id: '3', name: 'Cute Three Piece Set', fit: '3-9yrs', price: 'KES 2,400.00', category: 'Girls', image: placeHolders.girls },
-  { id: '4', name: 'Skirt Set', fit: '6m-3yrs', price: 'KES 1,800.00', category: 'Girls', image: placeHolders.girls },
-  { id: '5', name: 'Ankle Length Wide Leg Jeans Set', fit: '8-13yrs', price: 'KES 1,800.00', category: 'Girls', image: placeHolders.pants },
-  { id: '6', name: 'Fits 6m-2yrs 3pc Denim Set', fit: '6m-2yrs', price: 'KES 1,700.00', category: 'Sets', badge: 'Sale', originalPrice: 'KES 2,100.00', image: placeHolders.sets },
-  { id: '8', name: 'Cute White Dress with Denim Vest', fit: 'Fits 6m-5yrs', price: 'KES 1,900.00', category: 'Dresses', image: placeHolders.dresses },
-  { id: '17', name: 'High Quality Cute Dress with Jacket', price: 'KES 3,800.00', category: 'Dresses', badge: 'Hot', image: placeHolders.dresses },
+  {
+    id: '1',
+    name: '3pc Soft Jeans Short Set',
+    fit: 'Fits 1-4yrs',
+    description: 'Comfortable soft jeans short set with button-up shirt and bow tie',
+    price: 'KES 1,800.00',
+    category: 'Boys',
+    badge: 'Best Seller',
+    image: '/products/3pc soft jeans short set.jpeg',
+  },
+  {
+    id: '2',
+    name: '3pc Official Khaki Set',
+    fit: 'Fits 1-4 yrs',
+    description: 'Vest, shirt and khaki pants',
+    price: 'KES 2,000.00',
+    category: 'Boys',
+    badge: 'Hot',
+    image: '/products/3pc Official Khaki.jpeg',
+  },
+  {
+    id: '3',
+    name: 'Cute Three Piece Set',
+    fit: '3-9yrs',
+    description: 'Stylish three piece hoodie and sweatpants set',
+    price: 'KES 2,400.00',
+    category: 'Girls',
+    badge: 'New',
+    image: '/products/Cute three piece set.jpeg',
+  },
+  {
+    id: '4',
+    name: 'High Quality Cute Dress with Denim Jacket',
+    fit: '4-8yrs',
+    description: 'Elegant white dress paired with stylish lace collar denim jacket (Selling out fast!)',
+    price: 'KES 3,800.00',
+    category: 'Dresses',
+    badge: 'Hot Seller',
+    image: '/products/High quality cute dress with denim.jpeg',
+  },
+  {
+    id: '5',
+    name: 'Soft Denim Dress with White Ribbons',
+    fit: '3-8yrs',
+    description: 'Sleeveless soft denim dress styled with charming white ribbon accents',
+    price: 'KES 2,000.00',
+    category: 'Dresses',
+    badge: 'Trending',
+    image: '/products/Soft denim dress with white ribbons.jpeg',
+  },
+  {
+    id: '6',
+    name: 'Cute Denim 2pc Set',
+    fit: '3-8yrs',
+    description: 'Chic denim vest top paired with wide leg denim trousers',
+    price: 'KES 2,000.00',
+    category: 'Girls',
+    badge: 'Popular',
+    image: '/products/Cute denim 2 pc,3-8yrs.jpeg',
+  },
+  {
+    id: '7',
+    name: 'Brooklyn Two Piece Cargo Pants Set',
+    fit: '8-12yrs',
+    description: 'Stylish Brooklyn printed long sleeve crop top with wide leg cargo pants',
+    price: 'KES 2,200.00',
+    category: 'Girls',
+    badge: 'New Arrival',
+    image: '/products/Brooklyn two piece cargo pants.jpeg',
+  },
+  {
+    id: '8',
+    name: '3 Piece Skirt & Vest Set',
+    fit: '3-8yrs',
+    description: 'Butterfly embellishment vest, white long sleeve blouse & pleated skirt',
+    price: 'KES 2,000.00',
+    category: 'Girls',
+    badge: 'Featured',
+    image: '/products/3 piece skirt set,3-8yrs.jpeg',
+  },
+  {
+    id: '9',
+    name: 'Clothing Art Urban 2pc Set',
+    fit: '3-12yrs',
+    description: 'Modern long sleeve athletic sweatshirt and matching relaxed track pants',
+    price: 'KES 2,200.00',
+    category: 'Boys',
+    badge: 'Trending',
+    image: '/products/Clothing art 2pc set.jpeg',
+  },
+  {
+    id: '10',
+    name: 'Quality Khaki Cargo Pants',
+    fit: '3-12yrs',
+    description: 'Durable utility cargo pants with side pockets (Available in black & olive)',
+    price: 'KES 1,800.00',
+    category: 'Pants',
+    badge: 'Must Have',
+    image: '/products/Quality khaki pants.jpeg',
+  },
+  {
+    id: '11',
+    name: 'Girls Fluffy Dragonfly Warm Sweater',
+    fit: '3-8yrs',
+    description: 'Cozy and soft knit sweater with pearl dragonfly embroidery',
+    price: 'KES 1,800.00',
+    category: 'Tops',
+    badge: 'Cozy',
+    image: '/products/Girls warm sweater.jpeg',
+  },
+  {
+    id: '12',
+    name: 'Skirt Set',
+    fit: '6m-3yrs',
+    description: 'Adorable skirt set with decorative bows and matching cardigan',
+    price: 'KES 1,800.00',
+    category: 'Girls',
+    badge: 'Popular',
+    image: '/products/Skirt set.jpeg',
+  },
+  {
+    id: '13',
+    name: 'Ankle Length Wide Leg Pant and T-shirt',
+    fit: '8-13yrs',
+    description: 'Stylish wide leg denim pants with matching bow t-shirt',
+    price: 'KES 1,800.00',
+    category: 'Girls',
+    badge: 'Trending',
+    image: '/products/Ankle length wide Leg Pant and t-shirt.jpeg',
+  },
+  {
+    id: '14',
+    name: 'Mama\'s Bestie Denim Set',
+    fit: '6m-2yrs',
+    description: 'Cute denim pants with floral details and matching flutter sleeve top',
+    price: 'KES 1,700.00',
+    category: 'Sets',
+    badge: 'Sale',
+    image: '/products/Fits 6m-2yrs.jpeg',
+  },
+  {
+    id: '16',
+    name: 'Trendy Tracksuit Set',
+    fit: '3-10yrs',
+    description: 'Available in black, beige, green',
+    price: 'KES 2,200.00',
+    category: 'Boys',
+    badge: 'Hot',
+    image: '/products/3 piece set boys.jpeg',
+  },
+  {
+    id: '17',
+    name: 'Beautiful Three Piece Set',
+    fit: '6m-4yrs',
+    description: 'Available in yellow, cream and pink',
+    price: 'KES 2,000.00',
+    category: 'Sets',
+    badge: 'New',
+    image: '/products/Beautiful three piece.jpeg',
+  },
+  {
+    id: '18',
+    name: 'Quality Cute Heart Print Dress with Denim Vest',
+    fit: '3-8yrs',
+    description: 'Adorable heart pattern dress with stylish denim vest layer',
+    price: 'KES 1,800.00',
+    category: 'Dresses',
+    badge: 'Best Seller',
+    image: '/products/Quality cute dress.jpeg',
+  },
+  {
+    id: '19',
+    name: 'Cute White Dress with Matching Floral Bag',
+    fit: 'Fits 6m-5yrs',
+    description: 'Elegant white dress with denim flower vest and matching purse',
+    price: 'KES 1,900.00',
+    category: 'Dresses',
+    badge: 'Popular',
+    image: '/products/Cute white dress comes with the kabag.jpeg',
+  },
 ];
 
 const CATEGORIES = ['All', 'Dresses', 'Sets', 'Boys', 'Girls', 'Pants', 'Tops'] as const;
+
+function getWhatsAppUrl(product: Product): string {
+  const fitText = product.fit ? ` (${product.fit})` : '';
+  const message = `Hello Angeles Nest, I would like to order: ${product.name}${fitText} for ${product.price}`;
+  return `https://wa.me/254742871599?text=${encodeURIComponent(message)}`;
+}
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -64,7 +233,7 @@ export default function HomePage() {
 
       <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-5 max-w-[1600px] mx-auto space-y-6">
         
-        {/* Minimized, Sleek Compact Hero Banner (Giving Priority to Products) */}
+        {/* Minimized, Sleek Compact Hero Banner */}
         <div className="relative rounded-2xl text-white px-6 py-4 sm:py-5 overflow-hidden shadow-sm w-full flex flex-col sm:flex-row items-center justify-between gap-4" style={{ backgroundColor: brand.blue }}>
           <div className="relative z-10 space-y-1 text-center sm:text-left">
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm border border-white/30">
@@ -86,7 +255,7 @@ export default function HomePage() {
               Shop Catalog
             </Link>
             <a 
-              href="https://wa.me/254742871599" 
+              href="https://wa.me/254742871599?text=Hello%20Angeles%20Nest%2C%20I%20would%20like%20to%20place%20an%20order." 
               target="_blank" 
               rel="noopener noreferrer"
               className="px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all hover:opacity-95 text-white whitespace-nowrap bg-emerald-600 flex items-center gap-1.5"
@@ -110,7 +279,7 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Category Navigation & Catalog Section (First Priority) */}
+        {/* Category Navigation & Catalog Section */}
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
@@ -174,9 +343,14 @@ export default function HomePage() {
                   </button>
 
                   <div className="absolute bottom-3 left-0 right-0 flex justify-center opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-10 px-3">
-                    <Link href="/shop" className="w-full bg-white/95 backdrop-blur-sm text-slate-900 text-[11px] font-bold py-2 rounded-lg shadow-lg flex items-center justify-center gap-1.5 hover:bg-slate-50">
-                      <ShoppingBag className="h-3 w-3" /> Quick View
-                    </Link>
+                    <a 
+                      href={getWhatsAppUrl(product)} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold py-2 rounded-lg shadow-lg flex items-center justify-center gap-1.5"
+                    >
+                      <MessageCircle className="h-3 w-3 fill-white" /> Order via WhatsApp
+                    </a>
                   </div>
                 </div>
 
@@ -191,6 +365,9 @@ export default function HomePage() {
                     <h3 className="font-bold text-slate-900 group-hover:text-[#62c6e6] transition-colors text-xs line-clamp-2 leading-snug">
                       {product.name}
                     </h3>
+                    {product.description && (
+                      <p className="text-[10px] text-slate-500 mt-1 line-clamp-1">{product.description}</p>
+                    )}
                   </div>
 
                   <div className="pt-2.5 mt-2.5 border-t border-slate-100 flex items-end justify-between">
