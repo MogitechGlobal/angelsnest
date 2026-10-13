@@ -32,11 +32,18 @@ const TEMPLATE_MESSAGES = [
     subject: 'Wholesale / Shop Visit',
     text: 'Hi Angeles Nest! I am interested in purchasing kids clothing sets in bulk. Do you offer wholesale pricing or discounts for large orders?',
   },
+  {
+    label: '🛍️ Wholesale & Reseller Rates',
+    subject: 'Wholesale / Shop Visit',
+    text: 'Hello Angeles Nest! I run a boutique/reselling business and want to place a bulk order for 3pc sets & dresses. Could you share your wholesale catalog, MOQ, and tier discounts?',
+  },
 ];
 
 export default function ContactPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [selectedWaTemplateIndex, setSelectedWaTemplateIndex] = useState<number>(0);
+
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -59,12 +66,24 @@ export default function ContactPage() {
     }
   };
 
+  // Build WhatsApp URL using the selected WhatsApp quick query or custom form message
+  const getDynamicWhatsAppUrl = () => {
+    let textToSend = TEMPLATE_MESSAGES[selectedWaTemplateIndex]?.text;
+
+    // If form message exists and user typed custom content, send that instead
+    if (formData.message && formData.message.trim().length > 0) {
+      textToSend = `Hello Angeles Nest! ${formData.message}`;
+    }
+
+    return `https://wa.me/254742871599?text=${encodeURIComponent(textToSend)}`;
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 w-full overflow-x-hidden">
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
       <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-5 max-w-[1600px] mx-auto space-y-6">
-        
+
         {/* Minimized, Professional Compact Hero Section */}
         <div className="relative rounded-2xl text-white px-6 py-4 sm:py-5 overflow-hidden shadow-sm w-full flex flex-col sm:flex-row items-center justify-between gap-4" style={{ backgroundColor: brand.blue }}>
           <div className="relative z-10 space-y-1 text-center sm:text-left">
@@ -80,23 +99,23 @@ export default function ContactPage() {
           </div>
 
           <div className="relative z-10 flex items-center gap-2.5 shrink-0">
-            <Link 
-              href="/shop" 
+            <Link
+              href="/shop"
               className="px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all hover:opacity-95 text-white flex items-center gap-1.5 whitespace-nowrap"
               style={{ backgroundColor: brand.pink }}
             >
               Shop Collection <ArrowRight className="h-3.5 w-3.5" />
             </Link>
-            <a 
-              href="https://wa.me/254742871599" 
-              target="_blank" 
+            <a
+              href={getDynamicWhatsAppUrl()}
+              target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all hover:opacity-95 text-slate-900 bg-white flex items-center gap-1.5 whitespace-nowrap"
             >
               <MessageCircle className="h-3.5 w-3.5" style={{ color: brand.pink }} /> WhatsApp Us
             </a>
           </div>
-          
+
           <div className="absolute -right-16 -bottom-16 w-48 h-48 rounded-full blur-2xl pointer-events-none opacity-20 bg-white" />
         </div>
 
@@ -157,7 +176,7 @@ export default function ContactPage() {
 
         {/* Main Form & Interactive Location Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* Contact Inquiry Form */}
           <div className="lg:col-span-7 bg-white p-6 sm:p-10 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-sm">
             {submitted ? (
@@ -305,15 +324,35 @@ export default function ContactPage() {
               </div>
             </div>
 
+            {/* Quick WhatsApp Template Option Selector for Immediate Chat */}
             <div className="space-y-3 pt-4 border-t border-slate-100">
-              <p className="text-xs text-slate-500 font-medium">Need instant assistance finding us or placing an order?</p>
+              <p className="text-xs text-slate-600 font-bold flex items-center gap-1.5">
+                <MessageCircle className="h-3.5 w-3.5 text-emerald-600" /> Choose a WhatsApp Chat Topic:
+              </p>
+
+              <div className="grid grid-cols-2 gap-2">
+                {TEMPLATE_MESSAGES.map((tmpl, idx) => (
+                  <button
+                    key={tmpl.label}
+                    type="button"
+                    onClick={() => setSelectedWaTemplateIndex(idx)}
+                    className={`text-[10px] font-bold px-2.5 py-2 rounded-xl text-left border transition-all ${selectedWaTemplateIndex === idx
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-900 shadow-sm ring-1 ring-emerald-500'
+                        : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+                      }`}
+                  >
+                    {tmpl.label}
+                  </button>
+                ))}
+              </div>
+
               <a
-                href="https://wa.me/254742871599"
+                href={getDynamicWhatsAppUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3 rounded-xl font-bold text-xs text-white shadow-md transition-all hover:opacity-95 flex items-center justify-center gap-2 bg-emerald-600"
+                className="w-full py-3.5 rounded-xl font-extrabold text-xs text-white shadow-md transition-all hover:opacity-95 flex items-center justify-center gap-2 bg-emerald-600 active:scale-95 mt-2"
               >
-                <MessageCircle className="h-4 w-4" /> Chat with Us on WhatsApp Now
+                <MessageCircle className="h-4 w-4 fill-white" /> Chat with Us on WhatsApp Now
               </a>
             </div>
           </div>

@@ -1,8 +1,9 @@
+// apps/web/src/app/cart/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, ShieldCheck, Truck, MessageCircle, Tag, Sparkles } from 'lucide-react';
+import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, ShieldCheck, Truck, MessageCircle, Tag, Sparkles, MapPin, User, Phone, FileText, CreditCard } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -29,12 +30,19 @@ export default function CartPage() {
   const [discount, setDiscount] = useState(0);
   const [promoMessage, setPromoMessage] = useState('');
 
+  // Delivery & Payment Form State
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [deliveryLocation, setDeliveryLocation] = useState('');
+  const [orderNotes, setOrderNotes] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'delivery'>('mpesa');
+  const [formError, setFormError] = useState('');
+
   useEffect(() => {
     const savedCart = localStorage.getItem('angelsnest_cart');
     if (savedCart) {
       try {
         const parsed = JSON.parse(savedCart);
-        // Consolidate duplicate products into a single entry with aggregated quantities
         const consolidatedMap = new Map<string, CartItem>();
 
         parsed.forEach((item: any) => {
@@ -56,7 +64,6 @@ export default function CartPage() {
 
         const consolidatedItems = Array.from(consolidatedMap.values());
         setCartItems(consolidatedItems);
-        // Update local storage with clean consolidated items
         localStorage.setItem('angelsnest_cart', JSON.stringify(consolidatedItems));
       } catch (e) {
         console.error('Failed to load cart from localStorage', e);
@@ -67,6 +74,7 @@ export default function CartPage() {
   const updateCartStorage = (updatedItems: CartItem[]) => {
     setCartItems(updatedItems);
     localStorage.setItem('angelsnest_cart', JSON.stringify(updatedItems));
+    window.dispatchEvent(new Event('cart-updated'));
   };
 
   const updateQuantity = (id: string, delta: number) => {
@@ -95,7 +103,6 @@ export default function CartPage() {
     }
   };
 
-  // Helper to convert price string ("KES 1,800.00") or number to numeric value
   const getNumericPrice = (price: string | number): number => {
     if (typeof price === 'number') return price;
     const cleaned = price.replace(/[^0-9.]/g, '');
@@ -104,20 +111,32 @@ export default function CartPage() {
 
   const subtotal = cartItems.reduce((acc, item) => acc + getNumericPrice(item.price) * item.quantity, 0);
   const discountAmount = (subtotal * discount) / 100;
-  const shippingFee = subtotal > 5000 ? 0 : 350; // Free shipping over KES 5,000
+  const shippingFee = subtotal > 5000 ? 0 : 350; 
   const total = subtotal - discountAmount + (cartItems.length > 0 ? shippingFee : 0);
 
-  // Generate WhatsApp Checkout URL
-  const generateWhatsAppCheckout = () => {
+  // Generate WhatsApp Checkout URL with Customer Delivery & Payment Details
+  const handleWhatsAppCheckout = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!customerName.trim() || !customerPhone.trim() || !deliveryLocation.trim()) {
+      setFormError('Please fill in your Name, Phone Number, and Delivery Location.');
+      return;
+    }
+
+    setFormError('');
+
     const itemList = cartItems
       .map(item => `- ${item.name} (${item.size}) x${item.quantity} @ ${typeof item.price === 'number' ? `KES ${item.price.toLocaleString()}` : item.price}`)
       .join('\n');
     
-    const message = encodeURIComponent(
-      `Hello Angeles Nest Collections! I would like to place an order for the following items:\n\n${itemList}\n\nSubtotal: KES ${subtotal.toLocaleString()}\nDiscount: KES ${discountAmount.toLocaleString()}\nShipping: KES ${shippingFee.toLocaleString()}\n*Total: KES ${total.toLocaleString()}*\n\nPlease advise on delivery and payment.`
-    );
+    const paymentText = paymentMethod === 'mpesa' 
+      ? 'M-Pesa Paybill (Business No: 880100, A/c: 871599)' 
+      : 'Pay on Delivery / Shop Pickup';
 
-    return `https://wa.me/254742871599?text=${message}`;
+    const message = `Hello Angeles Nest Collections! I would like to place an order:\n\n*CUSTOMER DETAILS*\n- Name: ${customerName}\n- Phone: ${customerPhone}\n- Location/Address: ${deliveryLocation}\n- Payment Option: ${paymentText}\n${orderNotes ? `- Notes: ${orderNotes}\n` : ''}\n*ORDER ITEMS*\n${itemList}\n\nSubtotal: KES ${subtotal.toLocaleString()}\nDiscount: KES ${discountAmount.toLocaleString()}\nShipping: KES ${shippingFee.toLocaleString()}\n*Total: KES ${total.toLocaleString()}*\n\nPlease confirm availability and dispatch!`;
+
+    const whatsappUrl = `https://wa.me/254742871599?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
@@ -130,13 +149,13 @@ export default function CartPage() {
         <div className="relative rounded-2xl text-white px-6 py-5 overflow-hidden shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4" style={{ backgroundColor: brand.blue }}>
           <div className="relative z-10 space-y-1 text-center sm:text-left">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-md border border-white/30 shadow-sm">
-              <ShoppingBag className="h-3 w-3" /> Your Shopping Bag &bull; Angeles Nest
+              <ShoppingBag className="h-3 w-3" /> Checkout &bull; Angeles Nest
             </span>
             <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-              Review Your Selected Outfits
+              Review Cart, Delivery &amp; Payment
             </h1>
             <p className="text-white/90 text-xs font-medium max-w-lg">
-              Check your sizes, quantities, and complete your order instantly via WhatsApp or checkout.
+              Fill in your delivery details and choose your payment method via M-Pesa Paybill.
             </p>
           </div>
 
@@ -172,11 +191,13 @@ export default function CartPage() {
             </div>
           </div>
         ) : (
-          /* Cart Grid */
+          /* Cart & Checkout Grid */
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
-            {/* Items List (2 Columns) */}
-            <div className="lg:col-span-2 space-y-4">
+            {/* Left Column: Cart Items, Address & Payment Selection */}
+            <div className="lg:col-span-2 space-y-6">
+              
+              {/* Cart Items List */}
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden divide-y divide-slate-100">
                 <div className="p-4 sm:p-5 bg-slate-50/70 flex items-center justify-between">
                   <h2 className="font-extrabold text-sm sm:text-base text-slate-900">
@@ -239,6 +260,131 @@ export default function CartPage() {
                 })}
               </div>
 
+              {/* Delivery Address & Contact Form */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-sm space-y-4">
+                <h2 className="font-extrabold text-sm sm:text-base text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+                  <MapPin className="h-4 w-4" style={{ color: brand.blue }} /> Delivery Address &amp; Contact Information
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold uppercase tracking-wide text-slate-500 flex items-center gap-1">
+                      <User className="h-3 w-3" /> Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Sarah Wanjiru"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-sky-400"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold uppercase tracking-wide text-slate-500 flex items-center gap-1">
+                      <Phone className="h-3 w-3" /> Phone Number (M-Pesa) *
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="e.g. 0712345678"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-sky-400"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold uppercase tracking-wide text-slate-500 flex items-center gap-1">
+                    <MapPin className="h-3 w-3" /> Delivery Location / Address *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Kilimani, Nairobi (or Town / Estate & House No.)"
+                    value={deliveryLocation}
+                    onChange={(e) => setDeliveryLocation(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-sky-400"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold uppercase tracking-wide text-slate-500 flex items-center gap-1">
+                    <FileText className="h-3 w-3" /> Order Notes / Instructions (Optional)
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="e.g. Deliver between 2 PM - 4 PM or pickup at Biashara St shop"
+                    value={orderNotes}
+                    onChange={(e) => setOrderNotes(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-sky-400 resize-none"
+                  />
+                </div>
+              </div>
+
+              {/* M-Pesa Payment Card */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-sm space-y-4">
+                <h2 className="font-extrabold text-sm sm:text-base text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+                  <CreditCard className="h-4 w-4 text-emerald-600" /> Payment Method
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('mpesa')}
+                    className={`p-4 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                      paymentMethod === 'mpesa' 
+                        ? 'border-emerald-600 bg-emerald-50/40 shadow-sm' 
+                        : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full mb-2">
+                      <span className="font-bold text-xs text-slate-900">Lipa Na M-Pesa (Paybill)</span>
+                      <span className="w-4 h-4 rounded-full border border-emerald-600 flex items-center justify-center">
+                        {paymentMethod === 'mpesa' && <span className="w-2 h-2 rounded-full bg-emerald-600" />}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">Pay via Lipa Na M-Pesa Paybill and send confirmation code via WhatsApp.</p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('delivery')}
+                    className={`p-4 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                      paymentMethod === 'delivery' 
+                        ? 'border-emerald-600 bg-emerald-50/40 shadow-sm' 
+                        : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full mb-2">
+                      <span className="font-bold text-xs text-slate-900">Pay on Delivery / Pickup</span>
+                      <span className="w-4 h-4 rounded-full border border-emerald-600 flex items-center justify-center">
+                        {paymentMethod === 'delivery' && <span className="w-2 h-2 rounded-full bg-emerald-600" />}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">Pay cash or M-Pesa upon courier delivery or store pickup at Biashara St.</p>
+                  </button>
+                </div>
+
+                {paymentMethod === 'mpesa' && (
+                  <div className="p-4 rounded-xl bg-slate-900 text-white space-y-2 text-xs shadow-md">
+                    <p className="font-extrabold text-emerald-400 tracking-wide uppercase text-[10px]">M-Pesa Till / Paybill Details</p>
+                    <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
+                      <div>
+                        <span className="text-slate-400 text-[10px] block">Business Number (Paybill)</span>
+                        <strong className="text-sm tracking-wider text-white">880100</strong>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 text-[10px] block">Account Number</span>
+                        <strong className="text-sm tracking-wider text-white">871599</strong>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Perks Banner */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-3">
@@ -263,7 +409,7 @@ export default function CartPage() {
               </div>
             </div>
 
-            {/* Order Summary Column (1 Column) */}
+            {/* Right Column: Order Summary & Checkout Action */}
             <div className="space-y-4">
               <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-sm space-y-4">
                 <h2 className="font-extrabold text-sm sm:text-base text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
@@ -321,17 +467,21 @@ export default function CartPage() {
                   </div>
                 </div>
 
+                {formError && (
+                  <p className="text-xs font-semibold text-rose-500 bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+                    {formError}
+                  </p>
+                )}
+
                 {/* WhatsApp Quick Checkout Button */}
                 <div className="pt-2 space-y-2">
-                  <a
-                    href={generateWhatsAppCheckout()}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-extrabold text-white shadow-lg transition-all hover:opacity-95 flex items-center justify-center gap-2"
+                  <button
+                    onClick={handleWhatsAppCheckout}
+                    className="w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-extrabold text-white shadow-lg transition-all hover:opacity-95 flex items-center justify-center gap-2 cursor-pointer"
                     style={{ backgroundColor: '#25D366' }}
                   >
-                    <MessageCircle className="h-4 w-4 fill-white" /> Checkout via WhatsApp
-                  </a>
+                    <MessageCircle className="h-4 w-4 fill-white" /> Complete Order via WhatsApp
+                  </button>
                   
                   <Link
                     href="/shop"
@@ -342,7 +492,7 @@ export default function CartPage() {
                 </div>
 
                 <p className="text-[10px] text-center text-slate-400 pt-1">
-                  Secure checkout &bull; Pay via M-Pesa or Cash on Delivery/Pickup
+                  Paybill: 880100 &bull; A/c: 871599 &bull; Fast WhatsApp Dispatch
                 </p>
               </div>
             </div>

@@ -209,12 +209,6 @@ const PRODUCTS: Product[] = [
 
 const CATEGORIES = ['All', 'Dresses', 'Sets', 'Boys', 'Girls', 'Pants', 'Tops'] as const;
 
-function getWhatsAppUrl(product: Product): string {
-  const fitText = product.fit ? ` (${product.fit})` : '';
-  const message = `Hello Angeles Nest, I would like to order: ${product.name}${fitText} for ${product.price}`;
-  return `https://wa.me/254742871599?text=${encodeURIComponent(message)}`;
-}
-
 export default function ShopPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -222,8 +216,13 @@ export default function ShopPage() {
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const [notification, setNotification] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [baseUrl, setBaseUrl] = useState<string>('https://angelesnest.co.ke');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setBaseUrl(window.location.origin);
+    }
+
     const savedWishlist = localStorage.getItem('angelsnest_wishlist');
     if (savedWishlist) {
       try {
@@ -243,6 +242,14 @@ export default function ShopPage() {
     }
   }, []);
 
+  const getWhatsAppUrl = (product: Product): string => {
+    const imageUrl = `${baseUrl}${product.image}`;
+    const fitText = product.fit ? ` (${product.fit})` : '';
+    
+    const message = `Hello Angeles Nest, I would like to order this item:\n\n*Product ID:* #${product.id}\n*Name:* ${product.name}${fitText}\n*Price:* ${product.price}\n*Photo:* ${imageUrl}\n\nPlease confirm availability and delivery options!`;
+    return `https://wa.me/254742871599?text=${encodeURIComponent(message)}`;
+  };
+
   const isWishlisted = (id: string) => wishlistItems.some((item) => item.id === id);
 
   const toggleWishlist = (product: Product) => {
@@ -254,31 +261,38 @@ export default function ShopPage() {
     }
     setWishlistItems(updated);
     localStorage.setItem('angelsnest_wishlist', JSON.stringify(updated));
+    window.dispatchEvent(new Event('wishlist-updated'));
   };
 
   const addToCart = (product: Product) => {
     const updated = [...cartItems, product];
     setCartItems(updated);
     localStorage.setItem('angelsnest_cart', JSON.stringify(updated));
+    window.dispatchEvent(new Event('cart-updated'));
     setNotification(`Added "${product.name}" to cart!`);
     setTimeout(() => setNotification(null), 3000);
   };
 
   const handleShare = async (product: Product) => {
+    const imageUrl = `${baseUrl}${product.image}`;
+    const fitText = product.fit ? ` (${product.fit})` : '';
+
+    const shareText = `Check out ${product.name}${fitText} for ${product.price} at Angeles Nest Collections!\nProduct ID: #${product.id}\nPhoto: ${imageUrl}`;
+    
     const shareData = {
       title: product.name,
-      text: `Check out ${product.name} (${product.price}) at Angeles Nest Collections!`,
-      url: window.location.href,
+      text: shareText,
+      url: typeof window !== 'undefined' ? window.location.href : 'https://angelesnest.co.ke',
     };
 
-    if (navigator.share) {
+    if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share(shareData);
       } catch (err) {
         console.log('Share dismissed or failed', err);
       }
-    } else {
-      navigator.clipboard.writeText(`${shareData.text} - ${shareData.url}`);
+    } else if (typeof navigator !== 'undefined') {
+      navigator.clipboard.writeText(`${shareText}\nPage: ${window.location.href}`);
       setCopiedId(product.id);
       setTimeout(() => setCopiedId(null), 2000);
     }
