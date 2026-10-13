@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { ShoppingBag, Search, Heart, Sparkles, ShieldCheck, Truck, Headphones, Tag, ArrowRight, MapPin, MessageCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ShoppingBag, Search, Heart, Sparkles, ShieldCheck, Truck, Headphones, Tag, ArrowRight, MapPin, MessageCircle, Share2, Check } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -119,7 +119,7 @@ const FEATURED_PRODUCTS: Product[] = [
     name: 'Quality Khaki Cargo Pants',
     fit: '3-12yrs',
     description: 'Durable utility cargo pants with side pockets (Available in black & olive)',
-    price: 'KES 1,800.00',
+    price: 'KES 1,400.00',
     category: 'Pants',
     badge: 'Must Have',
     image: '/products/Quality khaki pants.jpeg',
@@ -217,6 +217,71 @@ function getWhatsAppUrl(product: Product): string {
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
+  const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [notification, setNotification] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedWishlist = localStorage.getItem('angelsnest_wishlist');
+    if (savedWishlist) {
+      try {
+        setWishlistItems(JSON.parse(savedWishlist));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    const savedCart = localStorage.getItem('angelsnest_cart');
+    if (savedCart) {
+      try {
+        setCartItems(JSON.parse(savedCart));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, []);
+
+  const isWishlisted = (id: string) => wishlistItems.some((item) => item.id === id);
+
+  const toggleWishlist = (product: Product) => {
+    let updated: Product[];
+    if (isWishlisted(product.id)) {
+      updated = wishlistItems.filter((item) => item.id !== product.id);
+    } else {
+      updated = [...wishlistItems, product];
+    }
+    setWishlistItems(updated);
+    localStorage.setItem('angelsnest_wishlist', JSON.stringify(updated));
+  };
+
+  const addToCart = (product: Product) => {
+    const updated = [...cartItems, product];
+    setCartItems(updated);
+    localStorage.setItem('angelsnest_cart', JSON.stringify(updated));
+    setNotification(`Added "${product.name}" to cart!`);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleShare = async (product: Product) => {
+    const shareData = {
+      title: product.name,
+      text: `Check out ${product.name} (${product.price}) at Angeles Nest Collections!`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Share dismissed or failed', err);
+      }
+    } else {
+      navigator.clipboard.writeText(`${shareData.text} - ${shareData.url}`);
+      setCopiedId(product.id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
 
   const filteredProducts = FEATURED_PRODUCTS.filter((product) => {
     const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
@@ -230,6 +295,14 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 w-full overflow-x-hidden">
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+
+      {/* Floating Notification Toast */}
+      {notification && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl text-xs font-bold shadow-xl flex items-center gap-2 animate-bounce">
+          <Check className="h-4 w-4 text-emerald-400" />
+          <span>{notification}</span>
+        </div>
+      )}
 
       <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-5 max-w-[1600px] mx-auto space-y-6">
         
@@ -315,74 +388,99 @@ export default function HomePage() {
 
           {/* Product Cards Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {filteredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="group bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full"
-              >
-                <div className="relative aspect-[4/5] w-full bg-slate-100 overflow-hidden">
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                  />
-                  
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {filteredProducts.map((product) => {
+              const wishlisted = isWishlisted(product.id);
+              const isCopied = copiedId === product.id;
+              return (
+                <div
+                  key={product.id}
+                  className="group bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full"
+                >
+                  <div className="relative aspect-[4/5] w-full bg-slate-100 overflow-hidden">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                    />
 
-                  {product.badge && (
-                    <span className="absolute top-2.5 left-2.5 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-md z-10" style={{ backgroundColor: product.badge === 'Sale' ? brand.pink : brand.blue }}>
-                      {product.badge}
-                    </span>
-                  )}
-                  
-                  <button
-                    aria-label="Add to wishlist"
-                    className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-md p-1.5 rounded-full text-slate-400 hover:text-[#e41575] transition-colors shadow-sm z-10"
-                  >
-                    <Heart className="h-3.5 w-3.5" />
-                  </button>
-
-                  <div className="absolute bottom-3 left-0 right-0 flex justify-center opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-10 px-3">
-                    <a 
-                      href={getWhatsAppUrl(product)} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold py-2 rounded-lg shadow-lg flex items-center justify-center gap-1.5"
-                    >
-                      <MessageCircle className="h-3 w-3 fill-white" /> Order via WhatsApp
-                    </a>
-                  </div>
-                </div>
-
-                <div className="p-3.5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
-                      <span className="uppercase tracking-wider font-bold" style={{ color: brand.blue }}>{product.category}</span>
-                      {product.fit && (
-                        <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium text-[9px]">{product.fit}</span>
-                      )}
-                    </div>
-                    <h3 className="font-bold text-slate-900 group-hover:text-[#62c6e6] transition-colors text-xs line-clamp-2 leading-snug">
-                      {product.name}
-                    </h3>
-                    {product.description && (
-                      <p className="text-[10px] text-slate-500 mt-1 line-clamp-1">{product.description}</p>
-                    )}
-                  </div>
-
-                  <div className="pt-2.5 mt-2.5 border-t border-slate-100 flex items-end justify-between">
-                    <div className="flex flex-col">
-                      {product.originalPrice && (
-                        <span className="text-[10px] text-slate-400 line-through mb-0.5">{product.originalPrice}</span>
-                      )}
-                      <span className={`text-xs sm:text-sm font-extrabold ${product.originalPrice ? 'text-[#e41575]' : 'text-slate-900'}`}>
-                        {product.price}
+                    {product.badge && (
+                      <span className="absolute top-2.5 left-2.5 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-md z-10" style={{ backgroundColor: product.badge === 'Sale' ? brand.pink : brand.blue }}>
+                        {product.badge}
                       </span>
+                    )}
+                    
+                    {/* Action Buttons Top Right (Wishlist & Share) */}
+                    <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10">
+                      <button
+                        onClick={() => toggleWishlist(product)}
+                        aria-label="Add to wishlist"
+                        className="bg-white/90 backdrop-blur-md p-1.5 rounded-full transition-colors shadow-sm hover:bg-white"
+                      >
+                        <Heart className={`h-3.5 w-3.5 transition-colors ${wishlisted ? 'fill-[#e41575] text-[#e41575]' : 'text-slate-400 hover:text-[#e41575]'}`} />
+                      </button>
+
+                      <button
+                        onClick={() => handleShare(product)}
+                        aria-label="Share product"
+                        className="bg-white/90 backdrop-blur-md p-1.5 rounded-full transition-colors shadow-sm hover:bg-white text-slate-400 hover:text-slate-900"
+                        title="Share product"
+                      >
+                        {isCopied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Share2 className="h-3.5 w-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2">
+                    <div>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
+                        <span className="uppercase tracking-wider font-bold" style={{ color: brand.blue }}>{product.category}</span>
+                        {product.fit && (
+                          <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium text-[9px]">{product.fit}</span>
+                        )}
+                      </div>
+                      <h3 className="font-bold text-slate-900 text-xs line-clamp-2 leading-snug">
+                        {product.name}
+                      </h3>
+                      {product.description && (
+                        <p className="text-[10px] text-slate-500 mt-1 line-clamp-1">{product.description}</p>
+                      )}
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 space-y-2">
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-xs sm:text-sm font-extrabold text-slate-900">
+                          {product.price}
+                        </span>
+                        {product.originalPrice && (
+                          <span className="text-[10px] text-slate-400 line-through">{product.originalPrice}</span>
+                        )}
+                      </div>
+
+                      {/* Action Buttons: Add to Cart & WhatsApp */}
+                      <div className="grid grid-cols-2 gap-1.5 pt-1">
+                        <button
+                          onClick={() => addToCart(product)}
+                          className="bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 text-[10px] font-bold py-2 px-1 rounded-xl shadow-sm flex items-center justify-center gap-1 transition-all"
+                        >
+                          <ShoppingBag className="h-3 w-3 shrink-0" />
+                          <span>Add to Cart</span>
+                        </button>
+
+                        <a 
+                          href={getWhatsAppUrl(product)} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-[10px] font-bold py-2 px-1 rounded-xl shadow-sm flex items-center justify-center gap-1 transition-all"
+                        >
+                          <MessageCircle className="h-3 w-3 fill-white shrink-0" />
+                          <span>WhatsApp</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

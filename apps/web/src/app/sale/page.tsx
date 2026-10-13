@@ -1,7 +1,8 @@
+// apps/web/src/app/sale/page.tsx
 'use client';
 
-import { useState } from 'react';
-import { ShoppingBag, Heart, Tag, MessageCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ShoppingBag, Heart, Tag, MessageCircle, Share2, Check } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -21,25 +22,88 @@ const brand = {
   pink: '#e41575',
 };
 
-const placeHolders = {
-  boys: 'https://images.unsplash.com/photo-1611428813653-aa606c998586?auto=format&fit=crop&w=600&q=80',
-  girls: 'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&w=600&q=80',
-  dresses: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=600&q=80',
-  sets: 'https://images.unsplash.com/photo-1519238384236-9ab865764d8a?auto=format&fit=crop&w=600&q=80',
-  pants: 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=600&q=80',
-};
-
 const SALE_PRODUCTS: SaleProduct[] = [
-  { id: '1s', name: '3pc Soft Jeans Shorts Set', fit: 'Fits 1-4yrs', price: 'KES 1,440.00', originalPrice: 'KES 1,800.00', discountPercentage: 20, category: 'Boys', image: placeHolders.boys },
-  { id: '2s', name: 'Cute Three Piece Set', fit: '3-9yrs', price: 'KES 1,920.00', originalPrice: 'KES 2,400.00', discountPercentage: 20, category: 'Girls', image: placeHolders.girls },
-  { id: '3s', name: 'Ankle Length Wide Leg Jeans', fit: '8-13yrs', price: 'KES 1,260.00', originalPrice: 'KES 1,800.00', discountPercentage: 30, category: 'Girls', image: placeHolders.pants },
-  { id: '4s', name: 'Fits 6m-2yrs 3pc Denim Set', fit: '6m-2yrs', price: 'KES 1,360.00', originalPrice: 'KES 1,700.00', discountPercentage: 20, category: 'Sets', image: placeHolders.sets },
-  { id: '5s', name: 'Cute White Dress with Denim Vest', fit: 'Fits 6m-5yrs', price: 'KES 1,330.00', originalPrice: 'KES 1,900.00', discountPercentage: 30, category: 'Dresses', image: placeHolders.dresses },
-  { id: '6s', name: 'Quality Khaki Cargo Pants', fit: 'Fits 3-10yrs', price: 'KES 1,120.00', originalPrice: 'KES 1,400.00', discountPercentage: 20, category: 'Pants', image: placeHolders.pants },
+  { id: '1s', name: '3pc Soft Jeans Shorts Set', fit: 'Fits 1-4yrs', price: 'KES 1,440.00', originalPrice: 'KES 1,800.00', discountPercentage: 20, category: 'Boys', image: '/products/3pc soft jeans short set.jpeg' },
+  { id: '2s', name: 'Cute Three Piece Set', fit: '3-9yrs', price: 'KES 1,920.00', originalPrice: 'KES 2,400.00', discountPercentage: 20, category: 'Girls', image: '/products/Cute three piece set.jpeg' },
+  { id: '3s', name: 'Ankle Length Wide Leg Jeans', fit: '8-13yrs', price: 'KES 1,260.00', originalPrice: 'KES 1,800.00', discountPercentage: 30, category: 'Girls', image: '/products/Ankle length wide Leg Pant and t-shirt.jpeg' },
+  { id: '4s', name: 'Fits 6m-2yrs 3pc Denim Set', fit: '6m-2yrs', price: 'KES 1,360.00', originalPrice: 'KES 1,700.00', discountPercentage: 20, category: 'Sets', image: '/products/Fits 6m-2yrs.jpeg' },
+  { id: '5s', name: 'Cute White Dress with Denim Vest', fit: 'Fits 6m-5yrs', price: 'KES 1,330.00', originalPrice: 'KES 1,900.00', discountPercentage: 30, category: 'Dresses', image: '/products/Cute white dress comes with the kabag.jpeg' },
+  { id: '6s', name: 'Quality Khaki Cargo Pants', fit: 'Fits 3-10yrs', price: 'KES 1,120.00', originalPrice: 'KES 1,400.00', discountPercentage: 20, category: 'Pants', image: '/products/Quality khaki pants.jpeg' },
 ];
+
+function getWhatsAppUrl(product: SaleProduct): string {
+  const fitText = product.fit ? ` (${product.fit})` : '';
+  const message = `Hello Angeles Nest, I would like to order sale item: ${product.name}${fitText} for ${product.price} (was ${product.originalPrice})`;
+  return `https://wa.me/254742871599?text=${encodeURIComponent(message)}`;
+}
 
 export default function SalePage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [wishlistItems, setWishlistItems] = useState<SaleProduct[]>([]);
+  const [cartItems, setCartItems] = useState<SaleProduct[]>([]);
+  const [notification, setNotification] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedWishlist = localStorage.getItem('angelsnest_wishlist');
+    if (savedWishlist) {
+      try {
+        setWishlistItems(JSON.parse(savedWishlist));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    const savedCart = localStorage.getItem('angelsnest_cart');
+    if (savedCart) {
+      try {
+        setCartItems(JSON.parse(savedCart));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, []);
+
+  const isWishlisted = (id: string) => wishlistItems.some((item) => item.id === id);
+
+  const toggleWishlist = (product: SaleProduct) => {
+    let updated: SaleProduct[];
+    if (isWishlisted(product.id)) {
+      updated = wishlistItems.filter((item) => item.id !== product.id);
+    } else {
+      updated = [...wishlistItems, product];
+    }
+    setWishlistItems(updated);
+    localStorage.setItem('angelsnest_wishlist', JSON.stringify(updated));
+  };
+
+  const addToCart = (product: SaleProduct) => {
+    const updated = [...cartItems, product];
+    setCartItems(updated);
+    localStorage.setItem('angelsnest_cart', JSON.stringify(updated));
+    setNotification(`Added "${product.name}" to cart!`);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const handleShare = async (product: SaleProduct) => {
+    const shareData = {
+      title: product.name,
+      text: `Check out ${product.name} on Sale (${product.price}, was ${product.originalPrice}) at Angeles Nest Collections!`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Share dismissed or failed', err);
+      }
+    } else {
+      navigator.clipboard.writeText(`${shareData.text} - ${shareData.url}`);
+      setCopiedId(product.id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
 
   const filteredProducts = SALE_PRODUCTS.filter((product) => {
     const matchesSearch =
@@ -52,6 +116,14 @@ export default function SalePage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 w-full overflow-x-hidden">
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+
+      {/* Floating Notification Toast */}
+      {notification && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl text-xs font-bold shadow-xl flex items-center gap-2 animate-bounce">
+          <Check className="h-4 w-4 text-emerald-400" />
+          <span>{notification}</span>
+        </div>
+      )}
 
       <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-5 max-w-[1600px] mx-auto space-y-6">
         
@@ -71,7 +143,7 @@ export default function SalePage() {
 
           <div className="relative z-10 flex items-center gap-2.5 shrink-0">
             <a 
-              href="https://wa.me/254742871599" 
+              href="https://wa.me/254742871599?text=Hello%20Angeles%20Nest%2C%20I%20would%20like%20to%20inquire%20about%20sale%20items." 
               target="_blank" 
               rel="noopener noreferrer"
               className="px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all hover:opacity-95 text-white whitespace-nowrap bg-slate-900 flex items-center gap-1.5"
@@ -93,63 +165,93 @@ export default function SalePage() {
 
         {/* Product Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="group bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full"
-            >
-              <div className="relative aspect-[4/5] w-full bg-slate-100 overflow-hidden">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                />
-                
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {filteredProducts.map((product) => {
+            const wishlisted = isWishlisted(product.id);
+            const isCopied = copiedId === product.id;
+            return (
+              <div
+                key={product.id}
+                className="group bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full"
+              >
+                <div className="relative aspect-[4/5] w-full bg-slate-100 overflow-hidden">
+                  <img 
+                    src={product.image} 
+                    alt={product.name}
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                  />
+                  
+                  {/* Discount Badge */}
+                  <span className="absolute top-2.5 left-2.5 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-md z-10" style={{ backgroundColor: brand.pink }}>
+                    -{product.discountPercentage}%
+                  </span>
+                  
+                  {/* Action Buttons Top Right (Wishlist & Share) */}
+                  <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10">
+                    <button
+                      onClick={() => toggleWishlist(product)}
+                      aria-label="Add to wishlist"
+                      className="bg-white/90 backdrop-blur-md p-1.5 rounded-full transition-colors shadow-sm hover:bg-white"
+                    >
+                      <Heart className={`h-3.5 w-3.5 transition-colors ${wishlisted ? 'fill-[#e41575] text-[#e41575]' : 'text-slate-400 hover:text-[#e41575]'}`} />
+                    </button>
 
-                {/* Discount Badge */}
-                <span className="absolute top-2.5 left-2.5 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-md z-10" style={{ backgroundColor: brand.pink }}>
-                  -{product.discountPercentage}%
-                </span>
-                
-                <button
-                  aria-label="Add to wishlist"
-                  className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-md p-1.5 rounded-full text-slate-400 hover:text-[#e41575] transition-colors shadow-sm z-10"
-                >
-                  <Heart className="h-3.5 w-3.5" />
-                </button>
-
-                <div className="absolute bottom-3 left-0 right-0 flex justify-center opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-10 px-3">
-                  <button className="w-full bg-white/95 backdrop-blur-sm text-slate-900 text-[11px] font-bold py-2 rounded-lg shadow-lg flex items-center justify-center gap-1.5 hover:bg-slate-50">
-                    <ShoppingBag className="h-3 w-3" /> Quick View
-                  </button>
-                </div>
-              </div>
-
-              <div className="p-3.5 flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
-                    <span className="uppercase tracking-wider font-bold" style={{ color: brand.blue }}>{product.category}</span>
-                    {product.fit && (
-                      <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium text-[9px]">{product.fit}</span>
-                    )}
-                  </div>
-                  <h3 className="font-bold text-slate-900 group-hover:text-[#e41575] transition-colors text-xs line-clamp-2 leading-snug">
-                    {product.name}
-                  </h3>
-                </div>
-
-                <div className="pt-2.5 mt-2.5 border-t border-slate-100 flex items-end justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-slate-400 line-through mb-0.5">{product.originalPrice}</span>
-                    <span className="text-xs sm:text-sm font-extrabold" style={{ color: brand.pink }}>
-                      {product.price}
-                    </span>
+                    <button
+                      onClick={() => handleShare(product)}
+                      aria-label="Share product"
+                      className="bg-white/90 backdrop-blur-md p-1.5 rounded-full transition-colors shadow-sm hover:bg-white text-slate-400 hover:text-slate-900"
+                      title="Share product"
+                    >
+                      {isCopied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Share2 className="h-3.5 w-3.5" />}
+                    </button>
                   </div>
                 </div>
+
+                <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2">
+                  <div>
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
+                      <span className="uppercase tracking-wider font-bold" style={{ color: brand.blue }}>{product.category}</span>
+                      {product.fit && (
+                        <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium text-[9px]">{product.fit}</span>
+                      )}
+                    </div>
+                    <h3 className="font-bold text-slate-900 text-xs line-clamp-2 leading-snug">
+                      {product.name}
+                    </h3>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-100 space-y-2">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-xs sm:text-sm font-extrabold" style={{ color: brand.pink }}>
+                        {product.price}
+                      </span>
+                      <span className="text-[10px] text-slate-400 line-through">{product.originalPrice}</span>
+                    </div>
+
+                    {/* Action Buttons: Add to Cart & WhatsApp */}
+                    <div className="grid grid-cols-2 gap-1.5 pt-1">
+                      <button
+                        onClick={() => addToCart(product)}
+                        className="bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 text-[10px] font-bold py-2 px-1 rounded-xl shadow-sm flex items-center justify-center gap-1 transition-all"
+                      >
+                        <ShoppingBag className="h-3 w-3 shrink-0" />
+                        <span>Add to Cart</span>
+                      </button>
+
+                      <a 
+                        href={getWhatsAppUrl(product)} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-[10px] font-bold py-2 px-1 rounded-xl shadow-sm flex items-center justify-center gap-1 transition-all"
+                      >
+                        <MessageCircle className="h-3 w-3 fill-white shrink-0" />
+                        <span>WhatsApp</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           
           {/* Empty State */}
           {filteredProducts.length === 0 && (

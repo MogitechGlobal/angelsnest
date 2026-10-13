@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, ShieldCheck, Truck, MessageCircle, Tag, Sparkles } from 'lucide-react';
 import Header from '@/components/Header';
@@ -14,56 +14,75 @@ const brand = {
 interface CartItem {
   id: string;
   name: string;
-  price: number;
-  size: string;
-  color: string;
+  price: string | number;
+  fit?: string;
+  size?: string;
+  color?: string;
   image: string;
   quantity: number;
 }
 
 export default function CartPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  
-  // Initial sample cart items (you can later connect this to localStorage or context)
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: '1',
-      name: 'Kids Stylish Denim & Cotton Two-Piece Set',
-      price: 1850,
-      size: '4-5 Years',
-      color: 'Blue / White',
-      image: 'https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=600&q=80',
-      quantity: 1,
-    },
-    {
-      id: '2',
-      name: 'Adorable Party Princess Dress with Bow',
-      price: 2400,
-      size: '6-7 Years',
-      color: 'Bubblegum Pink',
-      image: 'https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&w=600&q=80',
-      quantity: 1,
-    },
-  ]);
-
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [promoMessage, setPromoMessage] = useState('');
 
+  useEffect(() => {
+    const savedCart = localStorage.getItem('angelsnest_cart');
+    if (savedCart) {
+      try {
+        const parsed = JSON.parse(savedCart);
+        // Consolidate duplicate products into a single entry with aggregated quantities
+        const consolidatedMap = new Map<string, CartItem>();
+
+        parsed.forEach((item: any) => {
+          const itemId = item.id;
+          const qtyToAdd = item.quantity || 1;
+
+          if (consolidatedMap.has(itemId)) {
+            const existing = consolidatedMap.get(itemId)!;
+            existing.quantity += qtyToAdd;
+          } else {
+            consolidatedMap.set(itemId, {
+              ...item,
+              quantity: qtyToAdd,
+              size: item.size || item.fit || 'Standard Fit',
+              color: item.color || 'As shown',
+            });
+          }
+        });
+
+        const consolidatedItems = Array.from(consolidatedMap.values());
+        setCartItems(consolidatedItems);
+        // Update local storage with clean consolidated items
+        localStorage.setItem('angelsnest_cart', JSON.stringify(consolidatedItems));
+      } catch (e) {
+        console.error('Failed to load cart from localStorage', e);
+      }
+    }
+  }, []);
+
+  const updateCartStorage = (updatedItems: CartItem[]) => {
+    setCartItems(updatedItems);
+    localStorage.setItem('angelsnest_cart', JSON.stringify(updatedItems));
+  };
+
   const updateQuantity = (id: string, delta: number) => {
-    setCartItems(prev =>
-      prev.map(item => {
-        if (item.id === id) {
-          const newQty = item.quantity + delta;
-          return newQty > 0 ? { ...item, quantity: newQty } : item;
-        }
-        return item;
-      })
-    );
+    const updated = cartItems.map(item => {
+      if (item.id === id) {
+        const newQty = item.quantity + delta;
+        return newQty > 0 ? { ...item, quantity: newQty } : item;
+      }
+      return item;
+    });
+    updateCartStorage(updated);
   };
 
   const removeItem = (id: string) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+    const updated = cartItems.filter(item => item.id !== id);
+    updateCartStorage(updated);
   };
 
   const applyPromo = (e: React.FormEvent) => {
@@ -76,7 +95,14 @@ export default function CartPage() {
     }
   };
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  // Helper to convert price string ("KES 1,800.00") or number to numeric value
+  const getNumericPrice = (price: string | number): number => {
+    if (typeof price === 'number') return price;
+    const cleaned = price.replace(/[^0-9.]/g, '');
+    return parseFloat(cleaned) || 0;
+  };
+
+  const subtotal = cartItems.reduce((acc, item) => acc + getNumericPrice(item.price) * item.quantity, 0);
   const discountAmount = (subtotal * discount) / 100;
   const shippingFee = subtotal > 5000 ? 0 : 350; // Free shipping over KES 5,000
   const total = subtotal - discountAmount + (cartItems.length > 0 ? shippingFee : 0);
@@ -84,11 +110,11 @@ export default function CartPage() {
   // Generate WhatsApp Checkout URL
   const generateWhatsAppCheckout = () => {
     const itemList = cartItems
-      .map(item => `- ${item.name} (${item.size}, ${item.color}) x${item.quantity} @ KES ${item.price * item.quantity}`)
+      .map(item => `- ${item.name} (${item.size}) x${item.quantity} @ ${typeof item.price === 'number' ? `KES ${item.price.toLocaleString()}` : item.price}`)
       .join('\n');
     
     const message = encodeURIComponent(
-      `Hello Angeles Nest Collections! I would like to place an order for the following items:\n\n${itemList}\n\nSubtotal: KES ${subtotal}\nDiscount: KES ${discountAmount}\nShipping: KES ${shippingFee}\n*Total: KES ${total}*\n\nPlease advise on delivery and payment.`
+      `Hello Angeles Nest Collections! I would like to place an order for the following items:\n\n${itemList}\n\nSubtotal: KES ${subtotal.toLocaleString()}\nDiscount: KES ${discountAmount.toLocaleString()}\nShipping: KES ${shippingFee.toLocaleString()}\n*Total: KES ${total.toLocaleString()}*\n\nPlease advise on delivery and payment.`
     );
 
     return `https://wa.me/254742871599?text=${message}`;
@@ -159,53 +185,58 @@ export default function CartPage() {
                   <span className="text-xs text-slate-500 font-medium">Biashara St, Nairobi Shop</span>
                 </div>
 
-                {cartItems.map((item) => (
-                  <div key={item.id} className="p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
-                    <div className="flex items-center gap-4">
-                      <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                {cartItems.map((item, index) => {
+                  const itemPriceNum = getNumericPrice(item.price);
+                  return (
+                    <div key={`${item.id}-${index}`} className="p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                        </div>
+                        <div className="space-y-1">
+                          <h3 className="font-bold text-slate-900 text-xs sm:text-sm line-clamp-1">{item.name}</h3>
+                          <p className="text-slate-500 text-[11px]">Size/Fit: <span className="font-semibold text-slate-700">{item.size}</span></p>
+                          <p className="font-extrabold text-xs" style={{ color: brand.pink }}>
+                            {typeof item.price === 'number' ? `KES ${item.price.toLocaleString()}` : item.price}
+                          </p>
+                        </div>
                       </div>
-                      <div className="space-y-1">
-                        <h3 className="font-bold text-slate-900 text-xs sm:text-sm line-clamp-1">{item.name}</h3>
-                        <p className="text-slate-500 text-[11px]">Size: <span className="font-semibold text-slate-700">{item.size}</span> &bull; Color: <span className="font-semibold text-slate-700">{item.color}</span></p>
-                        <p className="font-extrabold text-xs" style={{ color: brand.pink }}>KES {item.price.toLocaleString()}</p>
+
+                      <div className="flex items-center justify-between w-full sm:w-auto gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                        {/* Quantity Controls */}
+                        <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50 shadow-sm">
+                          <button
+                            onClick={() => updateQuantity(item.id, -1)}
+                            className="p-2 hover:bg-slate-200 text-slate-600 transition-colors"
+                            aria-label="Decrease quantity"
+                          >
+                            <Minus className="h-3.5 w-3.5" />
+                          </button>
+                          <span className="px-3 text-xs font-extrabold text-slate-900">{item.quantity}</span>
+                          <button
+                            onClick={() => updateQuantity(item.id, 1)}
+                            className="p-2 hover:bg-slate-200 text-slate-600 transition-colors"
+                            aria-label="Increase quantity"
+                          >
+                            <Plus className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+
+                        <p className="font-extrabold text-xs sm:text-sm text-slate-900 min-w-[80px] text-right">
+                          KES {(itemPriceNum * item.quantity).toLocaleString()}
+                        </p>
+
+                        <button
+                          onClick={() => removeItem(item.id)}
+                          className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                          aria-label="Remove item"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
-
-                    <div className="flex items-center justify-between w-full sm:w-auto gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                      {/* Quantity Controls */}
-                      <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50 shadow-sm">
-                        <button
-                          onClick={() => updateQuantity(item.id, -1)}
-                          className="p-2 hover:bg-slate-200 text-slate-600 transition-colors"
-                          aria-label="Decrease quantity"
-                        >
-                          <Minus className="h-3.5 w-3.5" />
-                        </button>
-                        <span className="px-3 text-xs font-extrabold text-slate-900">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.id, 1)}
-                          className="p-2 hover:bg-slate-200 text-slate-600 transition-colors"
-                          aria-label="Increase quantity"
-                        >
-                          <Plus className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-
-                      <p className="font-extrabold text-xs sm:text-sm text-slate-900 min-w-[80px] text-right">
-                        KES {(item.price * item.quantity).toLocaleString()}
-                      </p>
-
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                        aria-label="Remove item"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Perks Banner */}
@@ -297,7 +328,7 @@ export default function CartPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-extrabold text-white shadow-lg transition-all hover:opacity-95 flex items-center justify-center gap-2"
-                    style={{ backgroundColor: '#25D366' }} // WhatsApp Green
+                    style={{ backgroundColor: '#25D366' }}
                   >
                     <MessageCircle className="h-4 w-4 fill-white" /> Checkout via WhatsApp
                   </a>

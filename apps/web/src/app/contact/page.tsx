@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { MapPin, Phone, Clock, Send, CheckCircle2, MessageCircle, Sparkles, Navigation, ArrowRight } from 'lucide-react';
+import { MapPin, Phone, Clock, Send, CheckCircle2, MessageCircle, Sparkles, Navigation, ArrowRight, MessageSquareCode } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -10,6 +10,29 @@ const brand = {
   blue: '#62c6e6',
   pink: '#e41575',
 };
+
+const TEMPLATE_MESSAGES = [
+  {
+    label: '📍 Store Directions',
+    subject: 'Wholesale / Shop Visit',
+    text: 'Hello Angeles Nest team! I am planning to visit your Biashara Street shop. Could you please send me detailed landmark directions to Shop M7 on the 1st Floor?',
+  },
+  {
+    label: '🚚 Delivery & Dispatch Rates',
+    subject: 'Countrywide Delivery Status',
+    text: 'Hi! I would like to know the doorstep delivery fees and delivery timeframe for shipping items to my town outside Nairobi.',
+  },
+  {
+    label: '📐 Sizing & Fit Help',
+    subject: 'Sizing & Fit Assistance',
+    text: 'Hello! I need help picking the right size for my child. Could you guide me on the measurements for 3-5 years sizes?',
+  },
+  {
+    label: '🛍️ Bulk & Wholesale Orders',
+    subject: 'Wholesale / Shop Visit',
+    text: 'Hi Angeles Nest! I am interested in purchasing kids clothing sets in bulk. Do you offer wholesale pricing or discounts for large orders?',
+  },
+];
 
 export default function ContactPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -20,6 +43,14 @@ export default function ContactPage() {
     subject: 'General Inquiry',
     message: '',
   });
+
+  const applyTemplate = (template: typeof TEMPLATE_MESSAGES[0]) => {
+    setFormData((prev) => ({
+      ...prev,
+      subject: template.subject,
+      message: template.text,
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,6 +185,25 @@ export default function ContactPage() {
                   </span>
                   <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Send Us a Message</h2>
                   <p className="text-slate-500 text-xs mt-1">Have a question about sizing or order tracking? Drop us a note below.</p>
+                </div>
+
+                {/* Quick Template Selector */}
+                <div className="space-y-2 pt-1">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1">
+                    <MessageSquareCode className="h-3.5 w-3.5" style={{ color: brand.pink }} /> Quick Template Messages
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {TEMPLATE_MESSAGES.map((tmpl) => (
+                      <button
+                        key={tmpl.label}
+                        type="button"
+                        onClick={() => applyTemplate(tmpl)}
+                        className="text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 border border-slate-200/80 text-slate-700 px-3 py-1.5 rounded-xl transition-all active:scale-95 text-left"
+                      >
+                        {tmpl.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

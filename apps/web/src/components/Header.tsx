@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, ShoppingBag, Heart, User, Menu, X } from 'lucide-react';
 
@@ -16,6 +16,59 @@ interface HeaderProps {
 
 export default function Header({ searchQuery, setSearchQuery }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartCount, setCartCount] = useState<number>(0);
+  const [wishlistCount, setWishlistCount] = useState<number>(0);
+
+  const updateCounts = () => {
+    // Load Cart Count
+    const savedCart = localStorage.getItem('angelsnest_cart');
+    if (savedCart) {
+      try {
+        const cartItems = JSON.parse(savedCart);
+        const totalCartQty = cartItems.reduce(
+          (sum: number, item: any) => sum + (item.quantity || 1),
+          0
+        );
+        setCartCount(totalCartQty);
+      } catch (e) {
+        console.error('Error reading cart count', e);
+        setCartCount(0);
+      }
+    } else {
+      setCartCount(0);
+    }
+
+    // Load Wishlist Count
+    const savedWishlist = localStorage.getItem('angelsnest_wishlist');
+    if (savedWishlist) {
+      try {
+        const wishlistItems = JSON.parse(savedWishlist);
+        setWishlistCount(wishlistItems.length);
+      } catch (e) {
+        console.error('Error reading wishlist count', e);
+        setWishlistCount(0);
+      }
+    } else {
+      setWishlistCount(0);
+    }
+  };
+
+  useEffect(() => {
+    updateCounts();
+
+    // Listen to changes in other tabs
+    window.addEventListener('storage', updateCounts);
+
+    // Listen to custom dispatch events from current tab
+    window.addEventListener('cart-updated', updateCounts);
+    window.addEventListener('wishlist-updated', updateCounts);
+
+    return () => {
+      window.removeEventListener('storage', updateCounts);
+      window.removeEventListener('cart-updated', updateCounts);
+      window.removeEventListener('wishlist-updated', updateCounts);
+    };
+  }, []);
 
   return (
     <header className="border-b bg-white/90 backdrop-blur-md sticky top-0 z-50 w-full">
@@ -68,8 +121,16 @@ export default function Header({ searchQuery, setSearchQuery }: HeaderProps) {
             <User className="h-5 w-5" />
           </Link>
           
-          <Link href="/wishlist" aria-label="Wishlist" className="hover:text-[#e41575] transition-colors hidden sm:block">
+          <Link href="/wishlist" aria-label="Wishlist" className="hover:text-[#e41575] transition-colors relative flex items-center group hidden sm:flex">
             <Heart className="h-5 w-5" />
+            {wishlistCount > 0 && (
+              <span 
+                className="absolute -top-1.5 -right-2 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform"
+                style={{ backgroundColor: brand.pink }}
+              >
+                {wishlistCount}
+              </span>
+            )}
           </Link>
           
           <Link href="/cart" aria-label="Cart" className="hover:text-[#62c6e6] transition-colors relative flex items-center group">
@@ -78,7 +139,7 @@ export default function Header({ searchQuery, setSearchQuery }: HeaderProps) {
               className="absolute -top-1.5 -right-2 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform"
               style={{ backgroundColor: brand.pink }}
             >
-              0
+              {cartCount}
             </span>
           </Link>
         </div>
@@ -150,7 +211,7 @@ export default function Header({ searchQuery, setSearchQuery }: HeaderProps) {
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-2 text-sm font-medium hover:text-[#e41575]"
             >
-              <Heart className="h-4 w-4" /> Wishlist
+              <Heart className="h-4 w-4" /> Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
             </Link>
           </div>
         </div>
