@@ -29,7 +29,7 @@ const brand = {
   pink: '#e41575',
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.angelesnest.co.ke';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://angelsnest-blond.vercel.app';
 
 interface CustomerProfile {
   id: string;
