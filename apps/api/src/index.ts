@@ -1,5 +1,5 @@
-import express from 'express';
-import cors from 'cors';
+// apps/api/src/index.ts
+import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { authRouter } from './routes/auth.js';
@@ -17,42 +17,51 @@ const allowedOrigins = [
   'https://www.angelsnest.co.ke'
 ];
 
-const corsOptions: cors.CorsOptions = {
-  origin: (origin, callback) => {
-    // Allow non-browser requests (e.g. mobile apps, curl, server-to-server)
-    if (!origin) return callback(null, true);
+// 1. Direct Low-Level CORS Middleware (handles all preflight OPTIONS cleanly)
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const origin = req.headers.origin;
 
+  if (origin) {
     const isAllowed =
       allowedOrigins.includes(origin) ||
       origin.endsWith('.vercel.app') ||
       origin.endsWith('.pages.dev');
 
     if (isAllowed) {
-      callback(null, true);
-    } else {
-      // Pass null, false instead of new Error(...) to avoid triggering a 500 internal server error
-      callback(null, false);
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
     }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  optionsSuccessStatus: 204
-};
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
 
-// 1. Mount CORS middleware
-app.use(cors(corsOptions));
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
 
-// 2. Explicitly handle all preflight OPTIONS requests before body parsers
-app.options('*', cors(corsOptions));
+  // Intercept and resolve preflight immediately
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+
+  next();
+});
 
 app.use(express.json());
 app.use(cookieParser());
 
-// 3. Mount API routers
+// 2. Mount under both /auth and /api/auth to prevent Vercel route mismatch issues
+app.use('/auth', authRouter);
 app.use('/api/auth', authRouter);
 
 app.get('/health', (req, res) => res.json({ status: 'API is running' }));
+app.get('/api/health', (req, res) => res.json({ status: 'API is running' }));
 
 const PORT = process.env.PORT || 8000;
 
