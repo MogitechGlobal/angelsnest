@@ -1,13 +1,19 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  output: "export",
-  reactCompiler: true,
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
+  experimental: {
+    // @ts-expect-error Next.js 15 experimental type variations
+    reactCompiler: true,
+    turbopack: {
+      rules: {
+        '*.css': {
+          loaders: ['@tailwindcss/turbopack'],
+          as: '*.css',
+        },
       },
     },
   },
