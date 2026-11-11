@@ -1,11 +1,17 @@
-import { Pool } from 'pg';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import dotenv from 'dotenv';
-import path from 'path';
-import * as schema from './schema';
+import 'dotenv/config';
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import * as schema from './schema.js';
 
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+const connectionString = process.env.DATABASE_URL;
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle(pool, { schema });
-export * from './schema';
+if (!connectionString) {
+  console.warn(
+    'Warning: DATABASE_URL is not defined in process.env. Ensure your .env file is loaded.'
+  );
+}
+
+const client = neon(connectionString || '');
+
+export const db = drizzle(client, { schema });
+export * from './schema.js';

@@ -35,7 +35,6 @@ export default function WishlistPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
-    // Load wishlist from localStorage
     const saved = localStorage.getItem('angelsnest_wishlist');
     if (saved) {
       try {
@@ -50,125 +49,184 @@ export default function WishlistPage() {
     const updated = wishlistItems.filter((item) => item.id !== id);
     setWishlistItems(updated);
     localStorage.setItem('angelsnest_wishlist', JSON.stringify(updated));
+    window.dispatchEvent(new Event('wishlist-updated'));
+  };
+
+  const addToCart = (product: Product) => {
+    const savedCart = localStorage.getItem('angelsnest_cart');
+    let currentCart: Product[] = [];
+    if (savedCart) {
+      try {
+        currentCart = JSON.parse(savedCart);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    const updated = [...currentCart, product];
+    localStorage.setItem('angelsnest_cart', JSON.stringify(updated));
+    window.dispatchEvent(new Event('cart-updated'));
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 w-full overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-[#FCFCFA] text-stone-900 antialiased selection:bg-stone-200">
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-5 max-w-[1600px] mx-auto space-y-6">
-        
-        {/* Minimized, Sleek Compact Hero Banner */}
-        <div className="relative rounded-2xl text-white px-6 py-4 sm:py-5 overflow-hidden shadow-sm w-full flex flex-col sm:flex-row items-center justify-between gap-4" style={{ backgroundColor: brand.pink }}>
-          <div className="relative z-10 space-y-1 text-center sm:text-left">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm border border-white/30">
-              <Heart className="h-3 w-3 fill-white" /> Saved Favorites &bull; Angeles Nest
-            </span>
-            <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight">
-              Your Personal Wishlist ({wishlistItems.length} items)
+      {/* Compact Clean Header Strip */}
+      <section className="border-b border-stone-200/80 bg-stone-50/50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white border border-stone-200/80 text-[10px] font-bold tracking-wide uppercase">
+              <Heart className="h-3 w-3 fill-rose-500 text-rose-500" /> Saved Favourites
+            </div>
+            <h1 className="text-xl sm:text-2xl font-serif tracking-tight text-stone-900">
+              Your Personal Wishlist ({wishlistItems.length})
             </h1>
-            <p className="text-white/90 text-xs font-medium">
-              Keep track of your favorite kids&apos; outfits and check out instantly via WhatsApp.
+            <p className="text-xs text-stone-500">
+              Keep track of outfits you love and order directly through WhatsApp or cart checkout
             </p>
           </div>
 
-          <div className="relative z-10 flex items-center gap-2.5 shrink-0">
-            <Link 
-              href="/shop" 
-              className="px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all hover:opacity-95 bg-slate-900 text-white whitespace-nowrap flex items-center gap-1.5"
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <Link
+              href="/shop"
+              className="px-3.5 py-1.5 rounded-full text-[11px] font-semibold bg-stone-900 text-stone-50 hover:bg-stone-800 transition-colors shadow-2xs whitespace-nowrap"
             >
-              Continue Shopping <ArrowRight className="h-3.5 w-3.5" />
+              Continue Shopping
             </Link>
           </div>
-          
-          <div className="absolute -right-16 -bottom-16 w-48 h-48 rounded-full blur-2xl pointer-events-none opacity-20 bg-white" />
         </div>
+      </section>
 
-        {/* Wishlist Grid or Empty State */}
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6">
         {wishlistItems.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-7 sm:gap-x-6 sm:gap-y-10">
             {wishlistItems.map((product) => (
-              <div
-                key={product.id}
-                className="group bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full"
-              >
-                <div className="relative aspect-[4/5] w-full bg-slate-100 overflow-hidden">
-                  <img 
-                    src={product.image} 
+              <div key={product.id} className="group flex flex-col space-y-2.5">
+                
+                {/* Photo Container */}
+                <div className="relative aspect-[4/5] w-full rounded-xl bg-stone-100 overflow-hidden border border-stone-200/60 shadow-2xs">
+                  <img
+                    src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-500"
+                    loading="lazy"
                   />
 
+                  {/* Optional Badge */}
                   {product.badge && (
-                    <span className="absolute top-2.5 left-2.5 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-md z-10" style={{ backgroundColor: brand.blue }}>
+                    <span className="absolute top-2.5 left-2.5 bg-white/90 backdrop-blur-xs text-stone-800 text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-sm border border-stone-200/60 shadow-2xs">
                       {product.badge}
                     </span>
                   )}
-                  
+
+                  {/* Remove Button */}
                   <button
                     onClick={() => removeFromWishlist(product.id)}
-                    aria-label="Remove from wishlist"
-                    className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-md p-1.5 rounded-full text-rose-500 hover:bg-rose-50 transition-colors shadow-sm z-10"
+                    aria-label="Remove item from wishlist"
+                    className="absolute top-2.5 right-2.5 bg-white/80 backdrop-blur-xs hover:bg-white p-1.5 rounded-full text-stone-400 hover:text-rose-600 transition-colors shadow-2xs cursor-pointer"
+                    title="Remove item"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
-                </div>
 
-                <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2">
-                  <div>
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
-                      <span className="uppercase tracking-wider font-bold" style={{ color: brand.blue }}>{product.category}</span>
-                      {product.fit && (
-                        <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium text-[9px]">{product.fit}</span>
-                      )}
-                    </div>
-                    <h3 className="font-bold text-slate-900 text-xs line-clamp-2 leading-snug">
-                      {product.name}
-                    </h3>
-                  </div>
-
-                  <div className="pt-2 border-t border-slate-100 space-y-2">
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-xs sm:text-sm font-extrabold text-slate-900">
-                        {product.price}
-                      </span>
-                    </div>
-
-                    <a 
-                      href={getWhatsAppUrl(product)} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-[11px] font-bold py-2 px-2 rounded-xl shadow-sm flex items-center justify-center gap-1.5 transition-all"
+                  {/* Desktop Hover Controls */}
+                  <div className="absolute inset-x-2 bottom-2 hidden sm:flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <button
+                      onClick={() => addToCart(product)}
+                      className="flex-1 bg-white/95 backdrop-blur-xs hover:bg-white text-stone-800 text-[11px] font-semibold py-2 rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 border border-stone-200/70 cursor-pointer"
                     >
-                      <MessageCircle className="h-3.5 w-3.5 fill-white shrink-0" />
-                      <span>Order via WhatsApp</span>
+                      <ShoppingBag className="h-3 w-3" />
+                      <span>Add to Cart</span>
+                    </button>
+
+                    <a
+                      href={getWhatsAppUrl(product)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-emerald-600/95 hover:bg-emerald-600 text-white p-2 rounded-lg shadow-sm transition-colors flex items-center justify-center cursor-pointer"
+                      title="Direct order via WhatsApp"
+                    >
+                      <MessageCircle className="h-3.5 w-3.5 fill-white" />
                     </a>
                   </div>
                 </div>
+
+                {/* Metadata Block */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-[11px] text-stone-500">
+                    <span className="uppercase tracking-wider text-[10px] text-stone-400 font-semibold">
+                      {product.category}
+                    </span>
+                    {product.fit && <span>{product.fit}</span>}
+                  </div>
+
+                  <h3 className="font-medium text-xs sm:text-sm text-stone-900 line-clamp-1 group-hover:text-stone-700 transition-colors">
+                    {product.name}
+                  </h3>
+
+                  <div className="pt-0.5">
+                    <span className="text-xs sm:text-sm font-semibold text-stone-900 tracking-tight">
+                      {product.price}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Mobile Actions */}
+                <div className="sm:hidden grid grid-cols-5 gap-1.5 pt-1">
+                  <button
+                    onClick={() => addToCart(product)}
+                    className="col-span-3 bg-stone-100 active:bg-stone-200 text-stone-800 text-[11px] font-medium py-1.5 px-2 rounded-lg border border-stone-200 flex items-center justify-center gap-1 cursor-pointer"
+                  >
+                    <ShoppingBag className="h-3 w-3 text-stone-600" />
+                    <span>Add</span>
+                  </button>
+                  <a
+                    href={getWhatsAppUrl(product)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="col-span-2 bg-emerald-50 active:bg-emerald-100 text-emerald-800 text-[11px] font-medium py-1.5 px-2 rounded-lg border border-emerald-200 flex items-center justify-center gap-1 cursor-pointer"
+                  >
+                    <MessageCircle className="h-3 w-3 text-emerald-600" />
+                    <span>Order</span>
+                  </a>
+                </div>
+
               </div>
             ))}
           </div>
         ) : (
-          <div className="py-20 flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-slate-200/80 shadow-sm max-w-2xl mx-auto p-8 space-y-4">
-            <div className="p-4 rounded-full bg-rose-50 text-[#e41575]">
-              <Heart className="h-10 w-10" />
+          /* Empty State */
+          <div className="py-20 flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-stone-200/80 p-8 space-y-4 max-w-lg mx-auto shadow-2xs">
+            <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+              <Heart className="h-6 w-6" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-lg font-extrabold text-slate-900">Your Wishlist is Empty</h3>
-              <p className="text-slate-500 text-xs max-w-md">
-                Explore our collection and click the heart icon on any outfit to save your favorite items here for quick access.
+              <h3 className="text-base font-serif font-semibold text-stone-900">Your wishlist is currently empty</h3>
+              <p className="text-xs text-stone-500 max-w-sm leading-relaxed">
+                Save outfits you love by tapping the heart icon while exploring our catalog.
               </p>
             </div>
             <Link
               href="/shop"
-              className="px-6 py-3 rounded-xl font-bold text-xs text-white shadow-md transition-all hover:opacity-95 flex items-center gap-2"
-              style={{ backgroundColor: brand.pink }}
+              className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold bg-stone-900 text-stone-50 hover:bg-stone-800 transition-colors shadow-2xs"
             >
-              Explore Catalog <ArrowRight className="h-4 w-4" />
+              Explore Shop <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         )}
 
+        {/* Footer Navigation Link */}
+        {wishlistItems.length > 0 && (
+          <div className="pt-8 border-t border-stone-200/70 text-center">
+            <Link
+              href="/cart"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-700 hover:text-stone-900 transition-colors"
+            >
+              Proceed to cart &amp; checkout <ArrowRight className="w-3.5 h-3.5" style={{ color: brand.pink }} />
+            </Link>
+          </div>
+        )}
       </main>
 
       <Footer />

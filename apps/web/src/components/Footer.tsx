@@ -27,38 +27,38 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full bg-white border-t border-slate-200/80 text-slate-700 pt-12 pb-8 mt-16 shadow-sm">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 space-y-12">
+    <footer className="w-full bg-white border-t border-stone-200/80 text-stone-600 pt-10 sm:pt-14 pb-8 mt-16 antialiased">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-12">
         
-        {/* Top Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Top Footer Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8">
           
           {/* Brand Column */}
-          <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2.5 font-extrabold text-lg text-slate-900">
+          <div className="lg:col-span-4 space-y-3.5">
+            <Link href="/" className="inline-flex items-center gap-2.5 font-serif font-bold text-lg text-stone-900 tracking-tight">
               <img 
                 src="/android-chrome-192x192.png" 
                 alt="Angeles Nest Logo" 
-                className="w-9 h-9 object-contain" 
+                className="w-8 h-8 object-contain" 
               />
               <span>Angeles Nest <span style={{ color: brand.pink }}>Collections</span></span>
             </Link>
-            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-              Dressing your little ones (6 months to 13 years) in comfort, vibrant style, and honest quality across Kenya.
+            <p className="text-xs text-stone-500 leading-relaxed max-w-sm">
+              Thoughtfully curated everyday sets, formal dresses, and durable streetwear for children aged 6 months to 13 years across Kenya.
             </p>
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex items-center gap-2 pt-1">
               <a 
                 href="https://wa.me/254742871599" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="p-2.5 rounded-full text-white shadow-sm hover:opacity-90 transition-all bg-emerald-600 flex items-center justify-center"
+                className="w-8 h-8 rounded-full text-white shadow-2xs hover:opacity-90 transition-opacity bg-emerald-600 flex items-center justify-center"
                 title="Chat on WhatsApp"
               >
                 <MessageCircle className="h-4 w-4" />
               </a>
               <a 
                 href="tel:+254742871599" 
-                className="p-2.5 rounded-full text-white shadow-sm hover:opacity-90 transition-all flex items-center justify-center"
+                className="w-8 h-8 rounded-full text-white shadow-2xs hover:opacity-90 transition-opacity flex items-center justify-center"
                 style={{ backgroundColor: brand.pink }}
                 title="Call Us"
               >
@@ -68,156 +68,160 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Quick Navigation</h3>
-            <ul className="space-y-2.5 text-xs sm:text-sm">
+          <div className="lg:col-span-2 space-y-3">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-stone-900">Navigation</h3>
+            <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/shop" className="text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1.5">
-                  <ChevronRight className="h-3 w-3 text-[#62c6e6]" /> Shop Collection
+                <Link href="/shop" className="text-stone-500 hover:text-stone-900 transition-colors inline-flex items-center gap-1.5">
+                  <ChevronRight className="h-3 w-3" style={{ color: brand.blue }} /> Shop Catalog
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1.5">
-                  <ChevronRight className="h-3 w-3 text-[#62c6e6]" /> About Our Store
+                <Link href="/new-arrivals" className="text-stone-500 hover:text-stone-900 transition-colors inline-flex items-center gap-1.5">
+                  <ChevronRight className="h-3 w-3" style={{ color: brand.blue }} /> New Arrivals
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1.5">
-                  <ChevronRight className="h-3 w-3 text-[#62c6e6]" /> Contact &amp; Location
+                <Link href="/sale" className="text-stone-500 hover:text-stone-900 transition-colors inline-flex items-center gap-1.5">
+                  <ChevronRight className="h-3 w-3" style={{ color: brand.pink }} /> Special Offers
                 </Link>
               </li>
               <li>
-                <Link href="/cart" className="text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1.5">
-                  <ChevronRight className="h-3 w-3 text-[#62c6e6]" /> View Cart
+                <Link href="/about" className="text-stone-500 hover:text-stone-900 transition-colors inline-flex items-center gap-1.5">
+                  <ChevronRight className="h-3 w-3" style={{ color: brand.blue }} /> About Our Store
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-stone-500 hover:text-stone-900 transition-colors inline-flex items-center gap-1.5">
+                  <ChevronRight className="h-3 w-3" style={{ color: brand.blue }} /> Contact &amp; Hours
+                </Link>
+              </li>
+              <li>
+                <Link href="/cart" className="text-stone-500 hover:text-stone-900 transition-colors inline-flex items-center gap-1.5">
+                  <ChevronRight className="h-3 w-3" style={{ color: brand.blue }} /> View Cart
                 </Link>
               </li>
             </ul>
           </div>
 
           {/* Store Location & Hours */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">Showroom &amp; Hours</h3>
-            <div className="space-y-3 text-xs sm:text-sm text-slate-600">
-              <div className="flex items-start gap-2.5">
-                <MapPin className="h-4 w-4 shrink-0 mt-0.5" style={{ color: brand.blue }} />
-                <span>Biashara Street, Zanna Exhibition, 1st Floor, Shop M7, Nairobi</span>
+          <div className="lg:col-span-3 space-y-3">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-stone-900">Showroom</h3>
+            <div className="space-y-2.5 text-xs text-stone-500">
+              <div className="flex items-start gap-2">
+                <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5" style={{ color: brand.blue }} />
+                <span className="leading-relaxed">Biashara St, Zanna Exhibition, 1st Floor, Shop M7, Nairobi</span>
               </div>
-              <div className="flex items-start gap-2.5">
-                <Phone className="h-4 w-4 shrink-0 mt-0.5" style={{ color: brand.pink }} />
-                <a href="tel:+254742871599" className="hover:text-slate-900 font-semibold">+254 742 871599</a>
+              <div className="flex items-center gap-2">
+                <Phone className="h-3.5 w-3.5 shrink-0" style={{ color: brand.pink }} />
+                <a href="tel:+254742871599" className="hover:text-stone-900 font-medium text-stone-700">+254 742 871599</a>
               </div>
-              <div className="pt-1 border-t border-slate-100 text-[11px] space-y-1">
-                <p className="font-semibold text-slate-900">Working Hours:</p>
-                <p>Mon - Fri: 8:00 AM - 7:00 PM</p>
-                <p className="text-rose-600 font-medium">Sat &amp; Sun: Closed</p>
+              <div className="pt-1.5 border-t border-stone-100 text-[11px] space-y-0.5">
+                <p className="text-stone-700 font-semibold">Mon &ndash; Fri: 8:00 AM &ndash; 7:00 PM</p>
+                <p className="text-stone-400">Sat &amp; Sun: Closed</p>
               </div>
             </div>
           </div>
 
-          {/* Instant Help Widget Box */}
-          <div className="space-y-4 bg-slate-50 p-5 rounded-2xl border border-slate-200/80">
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full text-white" style={{ backgroundColor: brand.pink }}>
-              <Sparkles className="h-3 w-3" /> Instant Support
+          {/* Instant WhatsApp Support Card */}
+          <div className="lg:col-span-3 space-y-2.5 p-4 rounded-xl bg-stone-50 border border-stone-200/80 shadow-2xs">
+            <span
+              className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+              style={{
+                color: brand.pink,
+                backgroundColor: `${brand.pink}10`,
+              }}
+            >
+              <Sparkles className="h-3 w-3" /> Quick Support
             </span>
-            <h3 className="text-sm font-bold text-slate-900">Need Quick Sizing Help?</h3>
-            <p className="text-slate-600 text-xs">
-              Chat instantly with our customer care representative on WhatsApp for immediate assistance.
+            <h4 className="text-xs font-semibold text-stone-900">Have Sizing Questions?</h4>
+            <p className="text-[11px] text-stone-500 leading-relaxed">
+              Reach out to our customer care team on WhatsApp for immediate sizing help and order dispatch updates.
             </p>
             <button
               onClick={() => setIsChatOpen(true)}
-              className="w-full py-2.5 rounded-xl font-bold text-xs text-white shadow-sm transition-all hover:opacity-95 flex items-center justify-center gap-2 bg-emerald-600"
+              className="w-full py-2 rounded-lg font-semibold text-xs text-white transition-opacity hover:opacity-95 flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
+              style={{ backgroundColor: brand.blue }}
             >
-              <MessageCircle className="h-3.5 w-3.5" /> Open WhatsApp Chatbot
+              <MessageCircle className="h-3.5 w-3.5" /> Quick Message
             </button>
           </div>
 
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-200/80 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+        <div className="pt-6 border-t border-stone-100 flex flex-col sm:flex-row justify-between items-center gap-3 text-[11px] text-stone-400">
           <p>&copy; {year} Angeles Nest Collections. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <Link href="/contact" className="hover:text-slate-900 transition-colors">Privacy Policy</Link>
-            <Link href="/contact" className="hover:text-slate-900 transition-colors">Terms of Service</Link>
+          <div className="flex items-center gap-5">
+            <Link href="/contact" className="hover:text-stone-700 transition-colors">Privacy Policy</Link>
+            <Link href="/contact" className="hover:text-stone-700 transition-colors">Terms of Service</Link>
           </div>
         </div>
 
       </div>
 
-      {/* Floating WhatsApp Chatbot Widget */}
+      {/* Floating WhatsApp Widget */}
       <div className="fixed bottom-6 right-6 z-50">
         {!isChatOpen ? (
           <button
             onClick={() => setIsChatOpen(true)}
-            className="relative flex items-center gap-2.5 px-4 py-3 rounded-full bg-emerald-600 text-white font-bold text-xs shadow-xl hover:bg-emerald-700 transition-all group animate-bounce"
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-emerald-600 text-white font-semibold text-xs shadow-lg hover:bg-emerald-700 transition-all cursor-pointer"
           >
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-200"></span>
             </span>
-            <MessageCircle className="h-5 w-5" />
+            <MessageCircle className="h-4 w-4" />
             <span className="hidden sm:inline">Chat with Us</span>
           </button>
         ) : (
-          <div className="w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col transition-all">
-            
-            {/* Chat Header */}
-            <div className="p-4 text-white flex items-center justify-between" style={{ backgroundColor: brand.blue }}>
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold text-slate-900 shadow-sm overflow-hidden p-1">
-                    <img src="/android-chrome-192x192.png" alt="Angeles Nest" className="w-full h-full object-contain" />
-                  </div>
-                  <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white"></span>
+          <div className="w-76 sm:w-88 bg-white rounded-2xl shadow-xl border border-stone-200/90 overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="p-3.5 bg-stone-900 text-stone-50 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="relative w-8 h-8 rounded-full bg-white flex items-center justify-center p-0.5 overflow-hidden">
+                  <img src="/android-chrome-192x192.png" alt="Angeles Nest" className="w-full h-full object-contain" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-xs text-slate-900">Angeles Nest Assistant</h4>
-                  <p className="text-[10px] text-slate-800 font-medium">Typically replies instantly</p>
+                  <h4 className="font-semibold text-xs text-white">Angeles Nest Care</h4>
+                  <p className="text-[10px] text-emerald-400">Online &bull; WhatsApp Connect</p>
                 </div>
               </div>
               <button 
                 onClick={() => setIsChatOpen(false)}
-                className="p-1.5 rounded-full bg-white/20 hover:bg-white/40 text-slate-900 transition-colors"
+                className="p-1 rounded-full text-stone-400 hover:text-white transition-colors cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            {/* Chat Body */}
-            <div className="p-4 bg-slate-50 space-y-3 h-64 overflow-y-auto text-xs">
-              <div className="flex items-start gap-2.5">
-                <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
-                  AN
-                </div>
-                <div className="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-slate-700 space-y-1.5 max-w-[85%]">
-                  <p className="font-semibold text-slate-900">Hello! 👋 Welcome to Angeles Nest Collections.</p>
-                  <p>How can we assist you with kids&apos; clothing sizes, orders, or visiting our Biashara Street shop today?</p>
-                </div>
+            {/* Body */}
+            <div className="p-3.5 bg-stone-50 space-y-2.5 h-44 overflow-y-auto text-xs">
+              <div className="bg-white p-3 rounded-xl rounded-tl-xs shadow-2xs border border-stone-200/70 text-stone-600 space-y-1">
+                <p className="font-semibold text-stone-900">Hello! 👋</p>
+                <p className="text-[11px] leading-relaxed">
+                  How can we help with fits, order status, or visiting our Biashara Street shop today?
+                </p>
               </div>
             </div>
 
-            {/* Chat Input */}
-            <form onSubmit={handleWhatsAppSend} className="p-3 bg-white border-t border-slate-100 flex items-center gap-2">
+            {/* Input Form */}
+            <form onSubmit={handleWhatsAppSend} className="p-2.5 bg-white border-t border-stone-100 flex items-center gap-1.5">
               <input
                 type="text"
-                placeholder="Type your question here..."
+                placeholder="Type your question..."
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
-                className="flex-1 bg-slate-100 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-900 outline-none focus:border-[#62c6e6] focus:bg-white transition-all"
+                className="flex-1 bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1.5 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:bg-white focus:border-stone-400"
               />
               <button
                 type="submit"
-                className="p-2.5 rounded-xl text-white shadow-sm hover:opacity-95 transition-all flex items-center justify-center shrink-0 bg-emerald-600"
+                className="p-2 rounded-lg text-white shadow-2xs hover:bg-emerald-700 transition-colors shrink-0 bg-emerald-600 cursor-pointer"
                 title="Send via WhatsApp"
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-3.5 w-3.5" />
               </button>
             </form>
-
-            <div className="px-3 pb-2 bg-white text-center">
-              <span className="text-[10px] text-slate-400">Powered by WhatsApp Instant Connect</span>
-            </div>
-
           </div>
         )}
       </div>

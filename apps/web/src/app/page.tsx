@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ShoppingBag, Search, Heart, Sparkles, ShieldCheck, Truck, Headphones, Tag, ArrowRight, MapPin, MessageCircle, Share2, Check } from 'lucide-react';
+import { ShoppingBag, Search, Heart, Sparkles, ShieldCheck, Truck, ArrowRight, MapPin, MessageCircle, Check } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -19,190 +19,170 @@ interface Product {
   image: string;
 }
 
-const brand = {
-  blue: '#62c6e6',
-  pink: '#e41575',
-};
-
 const FEATURED_PRODUCTS: Product[] = [
   {
     id: '1',
     name: '3pc Soft Jeans Short Set',
-    fit: 'Fits 1-4yrs',
-    description: 'Comfortable soft jeans short set with button-up shirt and bow tie',
+    fit: '1–4 yrs',
+    description: 'Button-up shirt, bow tie and tailored soft denim shorts',
     price: 'KES 1,800.00',
     category: 'Boys',
-    badge: 'Best Seller',
+    badge: 'Popular',
     image: '/products/3pc soft jeans short set.jpeg',
   },
   {
     id: '2',
     name: '3pc Official Khaki Set',
-    fit: 'Fits 1-4 yrs',
-    description: 'Vest, shirt and khaki pants',
+    fit: '1–4 yrs',
+    description: 'Smart formal vest, collared shirt and tailored khaki trousers',
     price: 'KES 2,000.00',
     category: 'Boys',
-    badge: 'Hot',
+    badge: 'Best Seller',
     image: '/products/3pc Official Khaki.jpeg',
   },
   {
     id: '3',
     name: 'Cute Three Piece Set',
-    fit: '3-9yrs',
-    description: 'Stylish three piece hoodie and sweatpants set',
+    fit: '3–9 yrs',
+    description: 'Cozy matching fleece hoodie, tee, and jogger bottoms',
     price: 'KES 2,400.00',
     category: 'Girls',
-    badge: 'New',
     image: '/products/Cute three piece set.jpeg',
   },
   {
     id: '4',
-    name: 'High Quality Cute Dress with Denim Jacket',
-    fit: '4-8yrs',
-    description: 'Elegant white dress paired with stylish lace collar denim jacket (Selling out fast!)',
+    name: 'Dress with Denim Jacket',
+    fit: '4–8 yrs',
+    description: 'Pleated white occasion dress with lace-trimmed denim jacket',
     price: 'KES 3,800.00',
     category: 'Dresses',
-    badge: 'Hot Seller',
+    badge: 'Signature',
     image: '/products/High quality cute dress with denim.jpeg',
   },
   {
     id: '5',
     name: 'Soft Denim Dress with White Ribbons',
-    fit: '3-8yrs',
-    description: 'Sleeveless soft denim dress styled with charming white ribbon accents',
+    fit: '3–8 yrs',
+    description: 'Lightweight sleeveless A-line denim dress with bow accents',
     price: 'KES 2,000.00',
     category: 'Dresses',
-    badge: 'Trending',
     image: '/products/Soft denim dress with white ribbons.jpeg',
   },
   {
     id: '6',
-    name: 'Cute Denim 2pc Set',
-    fit: '3-8yrs',
-    description: 'Chic denim vest top paired with wide leg denim trousers',
+    name: 'Denim Vest & Trouser 2pc Set',
+    fit: '3–8 yrs',
+    description: 'Buttoned denim waistcoat with wide-leg utility trousers',
     price: 'KES 2,000.00',
     category: 'Girls',
-    badge: 'Popular',
     image: '/products/Cute denim 2 pc,3-8yrs.jpeg',
   },
   {
     id: '7',
-    name: 'Brooklyn Two Piece Cargo Pants Set',
-    fit: '8-12yrs',
-    description: 'Stylish Brooklyn printed long sleeve crop top with wide leg cargo pants',
+    name: 'Brooklyn Cargo Pants Set',
+    fit: '8–12 yrs',
+    description: 'Relaxed cropped long-sleeve knit top with relaxed cargo bottoms',
     price: 'KES 2,200.00',
     category: 'Girls',
-    badge: 'New Arrival',
     image: '/products/Brooklyn two piece cargo pants.jpeg',
   },
   {
     id: '8',
-    name: '3 Piece Skirt & Vest Set',
-    fit: '3-8yrs',
-    description: 'Butterfly embellishment vest, white long sleeve blouse & pleated skirt',
+    name: '3pc Pleated Skirt & Vest Set',
+    fit: '3–8 yrs',
+    description: 'Embellished knit vest, contrast puff-sleeve blouse and pleated skirt',
     price: 'KES 2,000.00',
     category: 'Girls',
-    badge: 'Featured',
     image: '/products/3 piece skirt set,3-8yrs.jpeg',
   },
   {
     id: '9',
-    name: 'Clothing Art Urban 2pc Set',
-    fit: '3-12yrs',
-    description: 'Modern long sleeve athletic sweatshirt and matching relaxed track pants',
+    name: 'Urban Athleisure 2pc Set',
+    fit: '3–12 yrs',
+    description: 'Cotton-rich sweatshirt and tapered everyday track pants',
     price: 'KES 2,200.00',
     category: 'Boys',
-    badge: 'Trending',
     image: '/products/Clothing art 2pc set.jpeg',
   },
   {
     id: '10',
     name: 'Quality Khaki Cargo Pants',
-    fit: '3-12yrs',
-    description: 'Durable utility cargo pants with side pockets (Available in black & olive)',
+    fit: '3–12 yrs',
+    description: 'Durable utility bottoms with deep storage flap pockets',
     price: 'KES 1,400.00',
     category: 'Pants',
-    badge: 'Must Have',
     image: '/products/Quality khaki pants.jpeg',
   },
   {
     id: '11',
-    name: 'Girls Fluffy Dragonfly Warm Sweater',
-    fit: '3-8yrs',
-    description: 'Cozy and soft knit sweater with pearl dragonfly embroidery',
+    name: 'Fluffy Dragonfly Knit Sweater',
+    fit: '3–8 yrs',
+    description: 'Ultra-soft textured knit with delicate hand-stitched detailing',
     price: 'KES 1,800.00',
     category: 'Tops',
-    badge: 'Cozy',
     image: '/products/Girls warm sweater.jpeg',
   },
   {
     id: '12',
-    name: 'Skirt Set',
-    fit: '6m-3yrs',
-    description: 'Adorable skirt set with decorative bows and matching cardigan',
+    name: 'Petite Bow Skirt Set',
+    fit: '6m–3 yrs',
+    description: 'Soft knit cardigan with matching layered twirl skirt',
     price: 'KES 1,800.00',
     category: 'Girls',
-    badge: 'Popular',
     image: '/products/Skirt set.jpeg',
   },
   {
     id: '13',
-    name: 'Ankle Length Wide Leg Pant and T-shirt',
-    fit: '8-13yrs',
-    description: 'Stylish wide leg denim pants with matching bow t-shirt',
+    name: 'Wide Leg Trouser & Graphic Tee',
+    fit: '8–13 yrs',
+    description: 'High-waist relaxed fit denim paired with a soft combed cotton t-shirt',
     price: 'KES 1,800.00',
     category: 'Girls',
-    badge: 'Trending',
     image: '/products/Ankle length wide Leg Pant and t-shirt.jpeg',
   },
   {
     id: '14',
     name: "Mama's Bestie Denim Set",
-    fit: '6m-2yrs',
-    description: 'Cute denim pants with floral details and matching flutter sleeve top',
+    fit: '6m–2 yrs',
+    description: 'Flutter sleeve blouse with gentle stretch floral denim bottoms',
     price: 'KES 1,700.00',
     category: 'Sets',
-    badge: 'Sale',
     image: '/products/Fits 6m-2yrs.jpeg',
   },
   {
     id: '16',
-    name: 'Trendy Tracksuit Set',
-    fit: '3-10yrs',
-    description: 'Available in black, beige, green',
+    name: 'Urban Monochromatic Tracksuit',
+    fit: '3–10 yrs',
+    description: 'Clean silhouette warm tracksuit for school breaks and travel',
     price: 'KES 2,200.00',
     category: 'Boys',
-    badge: 'Hot',
     image: '/products/3 piece set boys.jpeg',
   },
   {
     id: '17',
-    name: 'Beautiful Three Piece Set',
-    fit: '6m-4yrs',
-    description: 'Available in yellow, cream and pink',
+    name: 'Pastel Three Piece Set',
+    fit: '6m–4 yrs',
+    description: 'Cotton rib long sleeve, stretch trouser, and warm overlay vest',
     price: 'KES 2,000.00',
     category: 'Sets',
-    badge: 'New',
     image: '/products/Beautiful three piece.jpeg',
   },
   {
     id: '18',
-    name: 'Quality Cute Heart Print Dress with Denim Vest',
-    fit: '3-8yrs',
-    description: 'Adorable heart pattern dress with stylish denim vest layer',
+    name: 'Heart Print Dress & Denim Vest',
+    fit: '3–8 yrs',
+    description: 'Airy print sundress finished with a cropped wash denim vest',
     price: 'KES 1,800.00',
     category: 'Dresses',
-    badge: 'Best Seller',
     image: '/products/Quality cute dress.jpeg',
   },
   {
     id: '19',
-    name: 'Cute White Dress with Matching Floral Bag',
-    fit: 'Fits 6m-5yrs',
-    description: 'Elegant white dress with denim flower vest and matching purse',
+    name: 'Floral Bag & White Tiered Dress',
+    fit: '6m–5 yrs',
+    description: 'Crisp party dress accompanied by a matching mini shoulder bag',
     price: 'KES 1,900.00',
     category: 'Dresses',
-    badge: 'Popular',
     image: '/products/Cute white dress comes with the kabag.jpeg',
   },
 ];
@@ -215,7 +195,6 @@ export default function HomePage() {
   const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const [notification, setNotification] = useState<string | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [baseUrl, setBaseUrl] = useState<string>('https://angelesnest.co.ke');
 
   useEffect(() => {
@@ -245,8 +224,7 @@ export default function HomePage() {
   const getWhatsAppUrl = (product: Product): string => {
     const imageUrl = `${baseUrl}${product.image}`;
     const fitText = product.fit ? ` (${product.fit})` : '';
-    
-    const message = `Hello Angeles Nest, I would like to order this item:\n\n*Product ID:* #${product.id}\n*Name:* ${product.name}${fitText}\n*Price:* ${product.price}\n*Photo:* ${imageUrl}\n\nPlease confirm availability and delivery options!`;
+    const message = `Hello Angeles Nest, I would like to order:\n\n• ${product.name}${fitText}\n• Price: ${product.price}\n• Photo: ${imageUrl}\n\nPlease confirm availability and delivery!`;
     return `https://wa.me/254742871599?text=${encodeURIComponent(message)}`;
   };
 
@@ -269,33 +247,8 @@ export default function HomePage() {
     setCartItems(updated);
     localStorage.setItem('angelsnest_cart', JSON.stringify(updated));
     window.dispatchEvent(new Event('cart-updated'));
-    setNotification(`Added "${product.name}" to cart!`);
-    setTimeout(() => setNotification(null), 3000);
-  };
-
-  const handleShare = async (product: Product) => {
-    const imageUrl = `${baseUrl}${product.image}`;
-    const fitText = product.fit ? ` (${product.fit})` : '';
-
-    const shareText = `Check out ${product.name}${fitText} for ${product.price} at Angeles Nest Collections!\nProduct ID: #${product.id}\nPhoto: ${imageUrl}`;
-    
-    const shareData = {
-      title: product.name,
-      text: shareText,
-      url: typeof window !== 'undefined' ? window.location.href : 'https://angelesnest.co.ke',
-    };
-
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        console.log('Share dismissed or failed', err);
-      }
-    } else if (typeof navigator !== 'undefined') {
-      navigator.clipboard.writeText(`${shareText}\nPage: ${window.location.href}`);
-      setCopiedId(product.id);
-      setTimeout(() => setCopiedId(null), 2000);
-    }
+    setNotification(`Added "${product.name}" to cart`);
+    setTimeout(() => setNotification(null), 2500);
   };
 
   const filteredProducts = FEATURED_PRODUCTS.filter((product) => {
@@ -308,248 +261,261 @@ export default function HomePage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 w-full overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-[#FCFCFA] text-stone-900 antialiased selection:bg-stone-200">
       <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
       {/* Floating Notification Toast */}
       {notification && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl text-xs font-bold shadow-xl flex items-center gap-2 animate-bounce">
-          <Check className="h-4 w-4 text-emerald-400" />
+        <div className="fixed bottom-6 right-6 z-50 bg-stone-900 text-stone-50 px-4 py-2.5 rounded-full text-xs font-medium shadow-2xl flex items-center gap-2 transition-all">
+          <Check className="h-3.5 w-3.5 text-emerald-400" />
           <span>{notification}</span>
         </div>
       )}
 
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-5 max-w-[1600px] mx-auto space-y-6">
-        
-        {/* Minimized, Sleek Compact Hero Banner */}
-        <div className="relative rounded-2xl text-white px-6 py-4 sm:py-5 overflow-hidden shadow-sm w-full flex flex-col sm:flex-row items-center justify-between gap-4" style={{ backgroundColor: brand.blue }}>
-          <div className="relative z-10 space-y-1 text-center sm:text-left">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm border border-white/30">
-              <Sparkles className="h-3 w-3" /> Angeles Nest Collections &bull; Nairobi
+      {/* Hero Section */}
+      <section className="border-b border-stone-200/80 bg-stone-50/70">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-stone-200/70 text-stone-700 text-[10px] font-bold tracking-wide uppercase shrink-0 self-center sm:self-auto">
+              <Sparkles className="h-3 w-3 text-stone-500" /> Ages 6m – 13yrs
             </span>
-            <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight">
-              Stylish &amp; Quality Outfits for Little Ones (6m - 13yrs)
-            </h1>
-            <p className="text-white/90 text-xs font-medium">
-              What you see is what you get. Fast countrywide delivery &amp; Nairobi pickup.
+            <p className="text-xs sm:text-sm font-medium text-stone-800">
+              Thoughtfully tailored clothing for growing children &bull; <span className="text-stone-500 font-normal">Nairobi pickup &amp; countrywide delivery.</span>
             </p>
           </div>
 
-          <div className="relative z-10 flex items-center gap-2.5 shrink-0">
-            <Link 
-              href="/shop" 
-              className="px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all hover:opacity-95 bg-slate-900 text-white whitespace-nowrap"
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href="/shop"
+              className="px-3.5 py-1.5 rounded-full text-[11px] font-semibold bg-stone-900 text-stone-50 hover:bg-stone-800 transition-colors shadow-2xs whitespace-nowrap"
             >
               Shop Catalog
             </Link>
-            <a 
-              href="https://wa.me/254742871599?text=Hello%20Angeles%20Nest%2C%20I%20would%20like%20to%20place%20an%20order." 
-              target="_blank" 
+            <a
+              href="https://wa.me/254742871599?text=Hello%20Angeles%20Nest%2C%20I%20would%20like%20to%20inquire%20about%20your%20outfits."
+              target="_blank"
               rel="noopener noreferrer"
-              className="px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all hover:opacity-95 text-white whitespace-nowrap bg-emerald-600 flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-full text-[11px] font-semibold bg-white border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors inline-flex items-center gap-1.5 whitespace-nowrap"
             >
-              <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
+              <MessageCircle className="h-3 w-3 text-emerald-600" /> WhatsApp
             </a>
           </div>
-          
-          <div className="absolute -right-16 -bottom-16 w-48 h-48 rounded-full blur-2xl pointer-events-none opacity-20 bg-white" />
         </div>
+      </section>
 
-        {/* Mobile Search Bar */}
-        <div className="flex md:hidden items-center bg-white rounded-xl px-4 py-2.5 shadow-sm border border-slate-200">
-          <Search className="h-4 w-4 mr-2 text-slate-400" />
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+
+        {/* Mobile Search Input */}
+        <div className="sm:hidden relative">
+          <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
           <input
             type="text"
-            placeholder="Search kids clothing..."
+            placeholder="Search dresses, boys sets, sweaters..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent border-none outline-none w-full text-xs text-slate-800"
+            className="w-full bg-white border border-stone-200 rounded-full pl-9 pr-4 py-2 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400 shadow-2xs"
           />
         </div>
 
-        {/* Category Navigation & Catalog Section */}
+        {/* Section Header & Minimal Category Filter */}
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-stone-200/80 pb-3">
             <div>
-              <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Featured Collections</h2>
+              <h2 className="text-xl sm:text-2xl font-serif text-stone-900 tracking-tight">Available Outfits</h2>
+              <p className="text-xs text-stone-500 mt-0.5">Showing {filteredProducts.length} pieces ready for dispatch</p>
             </div>
-            
-            <Link 
-              href="/shop" 
-              className="text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-colors hover:opacity-75 self-start sm:self-auto"
-              style={{ color: brand.pink }}
+
+            <Link
+              href="/shop"
+              className="text-xs font-semibold text-stone-600 hover:text-stone-900 inline-flex items-center gap-1 self-start sm:self-auto transition-colors"
             >
-              View All Products <ArrowRight className="h-3.5 w-3.5" />
+              View catalog <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none w-full">
+          {/* Clean Understated Filter Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all shadow-sm ${
-                  selectedCategory === cat
-                    ? 'text-white shadow-md'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                }`}
-                style={selectedCategory === cat ? { backgroundColor: brand.pink } : {}}
+                className={`px-3.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap ${selectedCategory === cat
+                    ? 'bg-stone-900 text-stone-50 font-semibold shadow-2xs'
+                    : 'bg-white border border-stone-200/80 text-stone-600 hover:text-stone-900 hover:border-stone-300'
+                  }`}
               >
                 {cat}
               </button>
             ))}
           </div>
+        </div>
 
-          {/* Product Cards Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+        {/* Streamlined, Breathable Product Grid (2 cols mobile, 3 tablet, 4 desktop) */}
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl border border-stone-200/70 p-8 space-y-2">
+            <p className="text-sm font-medium text-stone-800">No pieces match your search</p>
+            <p className="text-xs text-stone-500">Try checking for a different category or clear the search field.</p>
+            <button
+              onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }}
+              className="mt-3 text-xs font-semibold underline text-stone-700 hover:text-stone-900"
+            >
+              Reset Filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-7 sm:gap-x-6 sm:gap-y-10">
             {filteredProducts.map((product) => {
               const wishlisted = isWishlisted(product.id);
-              const isCopied = copiedId === product.id;
               return (
-                <div
-                  key={product.id}
-                  className="group bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full"
-                >
-                  <div className="relative aspect-[4/5] w-full bg-slate-100 overflow-hidden">
-                    <img 
-                      src={product.image} 
+                <div key={product.id} className="group flex flex-col space-y-2.5">
+                  {/* Photo Container */}
+                  <div className="relative aspect-[4/5] w-full rounded-xl bg-stone-100 overflow-hidden border border-stone-200/60 shadow-2xs">
+                    <img
+                      src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-500"
+                      loading="lazy"
                     />
 
+                    {/* Subtle Badge */}
                     {product.badge && (
-                      <span className="absolute top-2.5 left-2.5 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-md z-10" style={{ backgroundColor: product.badge === 'Sale' ? brand.pink : brand.blue }}>
+                      <span className="absolute top-2.5 left-2.5 bg-white/90 backdrop-blur-xs text-stone-800 text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-sm border border-stone-200/60 shadow-2xs">
                         {product.badge}
                       </span>
                     )}
-                    
-                    {/* Action Buttons Top Right (Wishlist & Share) */}
-                    <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10">
+
+                    {/* Wishlist Button */}
+                    <button
+                      onClick={() => toggleWishlist(product)}
+                      aria-label="Add to wishlist"
+                      className="absolute top-2.5 right-2.5 bg-white/80 backdrop-blur-xs hover:bg-white p-1.5 rounded-full text-stone-400 hover:text-rose-600 transition-colors shadow-2xs"
+                    >
+                      <Heart className={`h-3.5 w-3.5 ${wishlisted ? 'fill-rose-500 text-rose-500' : ''}`} />
+                    </button>
+
+                    {/* Quick Add Overlay on Hover (Desktop) */}
+                    <div className="absolute inset-x-2 bottom-2 hidden sm:flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       <button
-                        onClick={() => toggleWishlist(product)}
-                        aria-label="Add to wishlist"
-                        className="bg-white/90 backdrop-blur-md p-1.5 rounded-full transition-colors shadow-sm hover:bg-white"
+                        onClick={() => addToCart(product)}
+                        className="flex-1 bg-white/95 backdrop-blur-xs hover:bg-white text-stone-800 text-[11px] font-semibold py-2 rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 border border-stone-200/70"
                       >
-                        <Heart className={`h-3.5 w-3.5 transition-colors ${wishlisted ? 'fill-[#e41575] text-[#e41575]' : 'text-slate-400 hover:text-[#e41575]'}`} />
+                        <ShoppingBag className="h-3 w-3" />
+                        <span>Add to Cart</span>
                       </button>
 
-                      <button
-                        onClick={() => handleShare(product)}
-                        aria-label="Share product"
-                        className="bg-white/90 backdrop-blur-md p-1.5 rounded-full transition-colors shadow-sm hover:bg-white text-slate-400 hover:text-slate-900"
-                        title="Share product"
+                      <a
+                        href={getWhatsAppUrl(product)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-emerald-600/95 hover:bg-emerald-600 text-white p-2 rounded-lg shadow-sm transition-colors flex items-center justify-center"
+                        title="Direct order via WhatsApp"
                       >
-                        {isCopied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Share2 className="h-3.5 w-3.5" />}
-                      </button>
+                        <MessageCircle className="h-3.5 w-3.5 fill-white" />
+                      </a>
                     </div>
                   </div>
 
-                  <div className="p-3.5 flex-1 flex flex-col justify-between space-y-2">
-                    <div>
-                      <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
-                        <span className="uppercase tracking-wider font-bold" style={{ color: brand.blue }}>{product.category}</span>
-                        {product.fit && (
-                          <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium text-[9px]">{product.fit}</span>
-                        )}
-                      </div>
-                      <h3 className="font-bold text-slate-900 text-xs line-clamp-2 leading-snug">
-                        {product.name}
-                      </h3>
-                      {product.description && (
-                        <p className="text-[10px] text-slate-500 mt-1 line-clamp-1">{product.description}</p>
+                  {/* Clean Metadata Block */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-[11px] text-stone-500">
+                      <span className="uppercase tracking-wider text-[10px] text-stone-400 font-semibold">{product.category}</span>
+                      {product.fit && <span>{product.fit}</span>}
+                    </div>
+
+                    <h3 className="font-medium text-xs sm:text-sm text-stone-900 line-clamp-1 group-hover:text-stone-700 transition-colors">
+                      {product.name}
+                    </h3>
+
+                    <div className="flex items-baseline justify-between pt-0.5">
+                      <span className="text-xs sm:text-sm font-semibold text-stone-900 tracking-tight">
+                        {product.price}
+                      </span>
+                      {product.originalPrice && (
+                        <span className="text-[11px] text-stone-400 line-through">{product.originalPrice}</span>
                       )}
                     </div>
+                  </div>
 
-                    <div className="pt-2 border-t border-slate-100 space-y-2">
-                      <div className="flex items-baseline justify-between">
-                        <span className="text-xs sm:text-sm font-extrabold text-slate-900">
-                          {product.price}
-                        </span>
-                        {product.originalPrice && (
-                          <span className="text-[10px] text-slate-400 line-through">{product.originalPrice}</span>
-                        )}
-                      </div>
-
-                      {/* Action Buttons: Add to Cart & WhatsApp */}
-                      <div className="grid grid-cols-2 gap-1.5 pt-1">
-                        <button
-                          onClick={() => addToCart(product)}
-                          className="bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 text-[10px] font-bold py-2 px-1 rounded-xl shadow-sm flex items-center justify-center gap-1 transition-all"
-                        >
-                          <ShoppingBag className="h-3 w-3 shrink-0" />
-                          <span>Add to Cart</span>
-                        </button>
-
-                        <a 
-                          href={getWhatsAppUrl(product)} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-[10px] font-bold py-2 px-1 rounded-xl shadow-sm flex items-center justify-center gap-1 transition-all"
-                        >
-                          <MessageCircle className="h-3 w-3 fill-white shrink-0" />
-                          <span>WhatsApp</span>
-                        </a>
-                      </div>
-                    </div>
+                  {/* Mobile Actions (Visible on touch devices) */}
+                  <div className="sm:hidden grid grid-cols-5 gap-1.5 pt-1">
+                    <button
+                      onClick={() => addToCart(product)}
+                      className="col-span-3 bg-stone-100 active:bg-stone-200 text-stone-800 text-[11px] font-medium py-1.5 px-2 rounded-lg border border-stone-200 flex items-center justify-center gap-1"
+                    >
+                      <ShoppingBag className="h-3 w-3 text-stone-600" />
+                      <span>Add</span>
+                    </button>
+                    <a
+                      href={getWhatsAppUrl(product)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="col-span-2 bg-emerald-50 active:bg-emerald-100 text-emerald-800 text-[11px] font-medium py-1.5 px-2 rounded-lg border border-emerald-200 flex items-center justify-center gap-1"
+                    >
+                      <MessageCircle className="h-3 w-3 text-emerald-600" />
+                      <span>Chat</span>
+                    </a>
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
+        )}
 
-        {/* Value Props Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
-            <div className="p-2.5 rounded-xl shrink-0 text-white shadow-sm" style={{ backgroundColor: brand.blue }}>
+        {/* Quiet Trust Signals */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-stone-200/70">
+          <div className="p-4 rounded-xl bg-white border border-stone-200/70 flex items-start gap-3">
+            <div className="p-2 rounded-lg bg-stone-100 text-stone-700 shrink-0">
               <ShieldCheck className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-xs">Premium &amp; Honest Quality</h3>
-              <p className="text-[11px] text-slate-500">What you see is what you get</p>
+              <h4 className="text-xs font-semibold text-stone-900">True-to-Picture Quality</h4>
+              <p className="text-[11px] text-stone-500 mt-0.5 leading-normal">
+                Carefully selected fabrics that match the exact images shown.
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
-            <div className="p-2.5 rounded-xl shrink-0 text-white shadow-sm" style={{ backgroundColor: brand.pink }}>
+          <div className="p-4 rounded-xl bg-white border border-stone-200/70 flex items-start gap-3">
+            <div className="p-2 rounded-lg bg-stone-100 text-stone-700 shrink-0">
               <Truck className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-xs">Countrywide Delivery</h3>
-              <p className="text-[11px] text-slate-500">Fast &amp; reliable doorstep shipping</p>
+              <h4 className="text-xs font-semibold text-stone-900">Doorstep Delivery</h4>
+              <p className="text-[11px] text-stone-500 mt-0.5 leading-normal">
+                Reliable Nairobi dispatch and countrywide parcel courier service.
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
-            <div className="p-2.5 rounded-xl shrink-0 text-white shadow-sm bg-slate-900">
-              <Headphones className="h-4 w-4" />
+          <div className="p-4 rounded-xl bg-white border border-stone-200/70 flex items-start gap-3">
+            <div className="p-2 rounded-lg bg-stone-100 text-stone-700 shrink-0">
+              <MapPin className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-xs">Friendly Support</h3>
-              <p className="text-[11px] text-slate-500">Always ready to help with sizing</p>
+              <h4 className="text-xs font-semibold text-stone-900">Physical Store Pickup</h4>
+              <p className="text-[11px] text-stone-500 mt-0.5 leading-normal">
+                Biashara Street, Zanna Exhibition, 1st Floor, Shop M7.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Visit Physical Store Banner */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-          <div className="space-y-1 text-center md:text-left">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border" style={{ color: brand.blue, borderColor: `${brand.blue}40`, backgroundColor: `${brand.blue}10` }}>
-              <MapPin className="h-3.5 w-3.5" /> Physical Location
-            </span>
-            <h2 className="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900">Visit Our Nairobi Showroom</h2>
-            <p className="text-slate-600 text-xs max-w-xl leading-relaxed">
-              Biashara Street, Zanna Exhibition, First Floor, Shop M7. Come feel the fabric quality firsthand!
+        {/* Clean Showroom Callout */}
+        <div className="rounded-2xl border border-stone-200/80 bg-white p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-500">Nairobi CBD</span>
+            <h3 className="text-base sm:text-lg font-serif text-stone-900">Prefer inspecting sizing in person?</h3>
+            <p className="text-xs text-stone-600 max-w-xl">
+              Visit our showroom on Biashara Street to view fittings, feel fabric weights, or collect your online orders directly.
             </p>
           </div>
-          
+
           <Link
             href="/contact"
-            className="px-6 py-3 rounded-xl font-bold text-xs text-white shadow-md transition-all hover:opacity-95 whitespace-nowrap"
-            style={{ backgroundColor: brand.pink }}
+            className="px-5 py-2.5 rounded-full text-xs font-semibold bg-stone-900 text-white hover:bg-stone-800 transition-colors whitespace-nowrap shadow-2xs"
           >
-            Get Directions &amp; Contact
+            Store Location &amp; Hours
           </Link>
         </div>
 

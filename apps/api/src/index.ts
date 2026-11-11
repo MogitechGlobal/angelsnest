@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import { authRouter } from './routes/auth';
+import { authRouter } from './routes/auth.js';
 
 dotenv.config({ path: '../../.env' });
 
