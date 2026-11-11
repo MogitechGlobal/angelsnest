@@ -18,10 +18,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like server-to-server or mobile apps)
     if (!origin) return callback(null, true);
-    
-    // Check explicit list or dynamic suffixes (.vercel.app, .pages.dev)
     if (
       allowedOrigins.includes(origin) ||
       origin.endsWith('.vercel.app') ||
@@ -38,7 +35,8 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/auth', authRouter);
+// Mount under /api/auth so it matches frontend requests
+app.use('/api/auth', authRouter);
 
 app.get('/health', (req, res) => res.json({ status: 'API is running' }));
 
