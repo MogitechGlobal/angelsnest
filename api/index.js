@@ -1,1 +1,2 @@
+import 'express';
 export { default } from '../apps/api/dist/apps/api/src/index.js';
