@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "express",
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm --filter @angelsnest/api build"
+  "framework": null,
+  "installCommand": "npm install --include=workspace-root",
+  "buildCommand": "npm run build --workspace=@angelsnest/api"
 }
