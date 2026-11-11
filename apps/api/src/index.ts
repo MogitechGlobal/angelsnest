@@ -1,4 +1,3 @@
-// apps/api/src/index.ts
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -13,29 +12,44 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
   'https://angelesnest.co.ke',
+  'https://www.angelesnest.co.ke',
+  'https://angelsnest.co.ke',
   'https://www.angelsnest.co.ke'
 ];
 
-app.use(cors({
+const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
+    // Allow non-browser requests (e.g. mobile apps, curl, server-to-server)
     if (!origin) return callback(null, true);
-    if (
+
+    const isAllowed =
       allowedOrigins.includes(origin) ||
       origin.endsWith('.vercel.app') ||
-      origin.endsWith('.pages.dev')
-    ) {
+      origin.endsWith('.pages.dev');
+
+    if (isAllowed) {
       callback(null, true);
     } else {
-      callback(new Error('Blocked by CORS policy'));
+      // Pass null, false instead of new Error(...) to avoid triggering a 500 internal server error
+      callback(null, false);
     }
   },
-  credentials: true
-}));
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  optionsSuccessStatus: 204
+};
+
+// 1. Mount CORS middleware
+app.use(cors(corsOptions));
+
+// 2. Explicitly handle all preflight OPTIONS requests before body parsers
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
 
-// Mount under /api/auth so it matches frontend requests
+// 3. Mount API routers
 app.use('/api/auth', authRouter);
 
 app.get('/health', (req, res) => res.json({ status: 'API is running' }));
