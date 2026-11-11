@@ -13,7 +13,7 @@
     "start": "node --env-file=.env dist/apps/api/src/index.js"
   },
   "dependencies": {
-    "@angelsnest/database": "workspace:*",
+    "@angelsnest/database": "file:../../packages/database",
     "@neondatabase/serverless": "^0.10.4",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",

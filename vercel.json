@@ -1,11 +1,11 @@
 {
-  "framework": "express",
   "installCommand": "curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=9.15.4 SHELL=bash sh - && export PATH=\"$HOME/.local/share/pnpm:$PATH\" && pnpm install --no-frozen-lockfile",
-  "buildCommand": "export PATH=\"$HOME/.local/share/pnpm:$PATH\" && pnpm --filter @angelsnest/api build",
+  "buildCommand": "export PATH=\"$HOME/.local/share/pnpm:$PATH\" && pnpm --filter @angelsnest/api build && mkdir -p public",
+  "outputDirectory": "public",
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/apps/api/dist/apps/api/src/index.js"
+      "destination": "/api"
     }
   ]
 }
