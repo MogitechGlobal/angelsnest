@@ -17,6 +17,12 @@
       "@angelsnest/database": ["../../packages/database/src/index.ts"]
     }
   },
-  "include": ["src/**/*", "../../packages/database/src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*",
+    "../../packages/database/src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
