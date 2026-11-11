@@ -15,7 +15,7 @@ importers:
   apps/api:
     dependencies:
       '@angelsnest/database':
-        specifier: workspace:*
+        specifier: file:../../packages/database
         version: link:../../packages/database
       '@neondatabase/serverless':
         specifier: ^0.10.4
