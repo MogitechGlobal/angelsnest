@@ -53,20 +53,11 @@ export interface ShippingOption {
 const KENYA_SHIPPING_OPTIONS: ShippingOption[] = [
   // Store Pickups (Free)
   {
-    id: 'hq-pickup',
-    zone: 'HQ Pick Up',
-    label: 'KCS House, Mama Ngina Street, 8th Floor',
+    id: 'showroom-pickup',
+    zone: 'Showroom Pickup',
+    label: 'Biashara St, Zanna Exhibition, 1st Floor, Shop M7, Nairobi',
     deliveryTime: 'Ready in 2 hours',
-    areas: 'Mama Ngina Street, CBD, Nairobi',
-    cost: 0,
-    category: 'pickup',
-  },
-  {
-    id: 'platinum-plaza',
-    zone: 'Platinum Plaza',
-    label: 'Basement Shop B09',
-    deliveryTime: 'Ready in 2 hours',
-    areas: 'Biashara / Market Street, Nairobi CBD',
+    areas: 'Biashara Street, Nairobi CBD',
     cost: 0,
     category: 'pickup',
   },
