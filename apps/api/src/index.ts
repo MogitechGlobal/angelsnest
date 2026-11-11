@@ -1,3 +1,4 @@
+// apps/api/src/index.ts
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -21,4 +22,10 @@ app.use('/auth', authRouter);
 app.get('/health', (req, res) => res.json({ status: 'API is running' }));
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(`[API] Server running on port ${PORT}`));
+
+// Only listen locally if not running in a serverless environment (like Vercel)
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`[API] Server running on port ${PORT}`));
+}
+
+export default app;
